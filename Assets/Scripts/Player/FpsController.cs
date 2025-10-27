@@ -175,7 +175,6 @@ namespace Player
             EventBus<MoveEvent>.Subscribe(_onMove);
             EventBus<LookEvent>.Subscribe(_onLook);
             EventBus<ShootEvent>.Subscribe(TryShoot);
-            EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Reload, OnReload);
             EventBus<BulletEvent>.Subscribe(OnBulletCountChangedEvent);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Death, OnPlayerDeath);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Respawn, OnPlayerRespawn);
@@ -436,19 +435,6 @@ namespace Player
                     footstepsAudioSource.Stop();
                 }
             }
-        }
-        
-        private void OnReload()
-        {
-            if (_isDead || this == null || !gameObject.activeInHierarchy) return;
-            
-            StartCoroutine(DisableShooting());
-        }
-        private IEnumerator DisableShooting()
-        {
-            _canShoot = false;
-            yield return new WaitForSeconds(1f);
-            _canShoot = true;
         }
 
         private void TryShoot(ShootEvent e)

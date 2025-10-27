@@ -65,7 +65,6 @@ namespace Player
 
     public enum PlayerEventsEnum
     {
-        Reload,
         Gun,
         Hittable,
         Death,
