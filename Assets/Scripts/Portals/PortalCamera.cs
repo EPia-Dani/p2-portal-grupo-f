@@ -23,12 +23,9 @@ namespace Portals
         void Update()
         {
             var relativePlayerPosition = portal.transform.InverseTransformPoint(_cameraTransform.position);
+            relativePlayerPosition.y = -relativePlayerPosition.y;
             var unProjectedCameraPosition = otherPortal.transform.TransformPoint(-relativePlayerPosition);
             transform.position = unProjectedCameraPosition;
-            
-            // var relativePlayerRotation = Quaternion.Inverse(portal.transform.rotation) * _cameraTransform.rotation * Quaternion.Euler(0, 180, 0);
-            // var unProjectedCameraRotation = otherPortal.transform.rotation * relativePlayerRotation;
-            // transform.rotation = unProjectedCameraRotation;
             
             var relativePlayerRotation = portal.transform.InverseTransformDirection(_cameraTransform.forward);
             relativePlayerRotation = Quaternion.Euler(0, 180, 0) * relativePlayerRotation;
