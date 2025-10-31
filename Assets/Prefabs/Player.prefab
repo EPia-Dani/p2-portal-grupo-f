@@ -180,7 +180,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -448,7 +448,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 959
+    m_Bits: 1023
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -570,10 +570,13 @@ MonoBehaviour:
   _jumpHeight: 2.5
   _groundedGravity: -2
   shotStartupTime: 0.05
+  portalAbleLayer:
+    serializedVersion: 2
+    m_Bits: 0
   recoilTime: 0.2
   shotSpread: 0.01
-  shotDecal: {fileID: 2321565757005935916, guid: 7a931e7750f14df4f970a0ac26e5ddaf,
-    type: 3}
+  portalBlue: {fileID: 0}
+  portalOrange: {fileID: 0}
   _sensitivity: 0.0345
   _invertPitch: 0
   _runFov: 70
@@ -604,6 +607,40 @@ MonoBehaviour:
   _recoilVerticalRotation: 3
   _recoilSnapTime: 0.05
   _recoilReturnTime: 0.2
+--- !u!1 &8480088338474395553
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 5120721239749964195, guid: 7a562230d8fa1184bb5702c1b51be1c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 3656685111655192066}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9143578032244702491}
+  - component: {fileID: 8739697626609577501}
+  m_Layer: 0
+  m_Name: 'Classic_Revolver_URP (Missing Prefab with guid: 7a562230d8fa1184bb5702c1b51be1c7)'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9143578032244702491
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 5502172216401881881, guid: 7a562230d8fa1184bb5702c1b51be1c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 3656685111655192066}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8480088338474395553}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.08628637, z: 0, w: 0.9962704}
+  m_LocalPosition: {x: 0.534, y: -0.763, z: 0.701}
+  m_LocalScale: {x: 4.08, y: 4.08, z: 4.08}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 3073867922251492161}
+  m_LocalEulerAnglesHint: {x: 0, y: 9.9, z: 0}
 --- !u!1 &9068138246549944969
 GameObject:
   m_ObjectHideFlags: 0
@@ -782,12 +819,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8739697626609577501}
   m_SourcePrefab: {fileID: 100100000, guid: 7a562230d8fa1184bb5702c1b51be1c7, type: 3}
---- !u!1 &8480088338474395553 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5120721239749964195, guid: 7a562230d8fa1184bb5702c1b51be1c7,
-    type: 3}
-  m_PrefabInstance: {fileID: 3656685111655192066}
-  m_PrefabAsset: {fileID: 0}
 --- !u!95 &8739697626609577501
 Animator:
   serializedVersion: 7
@@ -810,9 +841,3 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!4 &9143578032244702491 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5502172216401881881, guid: 7a562230d8fa1184bb5702c1b51be1c7,
-    type: 3}
-  m_PrefabInstance: {fileID: 3656685111655192066}
-  m_PrefabAsset: {fileID: 0}

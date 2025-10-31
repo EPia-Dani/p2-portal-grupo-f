@@ -41,10 +41,13 @@ namespace Player
         [SerializeField] private float _jumpHeight = 1.5f;
         [SerializeField] private float _groundedGravity = -2f;
 
-        [Header("Shooting")] [SerializeField] private float shotStartupTime = 0.05f;
+        [Header("Shooting")] 
+        [SerializeField] private float shotStartupTime = 0.05f;
+        [SerializeField] private LayerMask portalAbleLayer;
         [SerializeField] private float recoilTime = 0.2f;
         [SerializeField] private float shotSpread = 0.01f;
-        [SerializeField] private GameObject shotDecal;
+        [SerializeField] private GameObject portalBlue;
+        [SerializeField] private GameObject portalOrange;
         private int bulletCount;
 
         [Header("Camera Look")] [SerializeField, Range(0f, 1f)]
@@ -175,7 +178,6 @@ namespace Player
             EventBus<MoveEvent>.Subscribe(_onMove);
             EventBus<LookEvent>.Subscribe(_onLook);
             EventBus<ShootEvent>.Subscribe(TryShoot);
-            EventBus<BulletEvent>.Subscribe(OnBulletCountChangedEvent);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Death, OnPlayerDeath);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Respawn, OnPlayerRespawn);
 
@@ -229,8 +231,6 @@ namespace Player
             ApplyBob();
         }
         
-        
-
         private void PerformJump()
         {
             _verticalVelocity = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
@@ -441,7 +441,7 @@ namespace Player
         {
             if (e.value)
             {
-                if (_canShoot && bulletCount > 0 && !_isDead)
+                if (_canShoot && !_isDead)
                 {
                     EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Gun);
                     StartCoroutine(Shoot());
@@ -459,10 +459,10 @@ namespace Player
             _canShoot = false;
         
             yield return new WaitForSeconds(shotStartupTime);
+            
+            Debug.Log("Pew Pew");
         
-            Debug.Log("Shoot");
-        
-            audioSource.PlayOneShot(shootClip);
+            // audioSource.PlayOneShot(shootClip);
             
             // Apply recoil with vertical rotation
             _recoilPositionOffset = _recoilPositionKickback;
@@ -474,17 +474,14 @@ namespace Player
                 .3f)) - _mainCamera.transform.position;
         
             Physics.Raycast(_mainCamera.transform.position, target,
-                out var hit, 100f);
-        
+                out var hit, 100f, portalAbleLayer);
+            
             if (hit.collider)
             {
-                Instantiate(shotDecal, hit.point, Quaternion.LookRotation(hit.normal));
-                Debug.Log("Hit");
-                if (hit.collider.TryGetComponent(out Hittable hittableObject))
-                {
-                    Debug.Log("Hittable");
-                    EventBusVoid<Hittable, PlayerEventsEnum>.Invoke(hittableObject, PlayerEventsEnum.Hittable);
-                }
+                
+                
+                portalBlue.transform.position = hit.point + hit.normal * 0.01f;
+                portalBlue.transform.rotation = Quaternion.LookRotation(hit.normal);
             }
         
             yield return new WaitForSeconds(recoilTime);
@@ -500,7 +497,6 @@ namespace Player
             EventBus<MoveEvent>.Unsubscribe(_onMove);
             EventBus<LookEvent>.Unsubscribe(_onLook);
             EventBus<ShootEvent>.Unsubscribe(TryShoot);
-            EventBus<BulletEvent>.Unsubscribe(OnBulletCountChangedEvent);
             EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Death, OnPlayerDeath);
         }
     }
