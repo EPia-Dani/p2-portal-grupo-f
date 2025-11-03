@@ -47,5 +47,10 @@ namespace Player
         {
             EventBus<ShootEvent>.Invoke(new ShootEvent { value = value.isPressed });
         }
+
+        private void OnInteract(InputValue value)
+        {
+            EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Interact);
+        }
     }
 }

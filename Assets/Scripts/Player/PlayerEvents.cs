@@ -37,6 +37,7 @@ namespace Player
     {
         public int value;
     }
+    
 
     public struct HealEvent : IEvent
     {
@@ -65,9 +66,10 @@ namespace Player
 
     public enum PlayerEventsEnum
     {
-        Gun,
+        Interact,
         Hittable,
         Death,
-        Respawn
+        Respawn,
+        Gun
     }
 }
