@@ -63,6 +63,8 @@ namespace Player
     {
         public bool value;
     }
+    
+    
 
     public enum PlayerEventsEnum
     {

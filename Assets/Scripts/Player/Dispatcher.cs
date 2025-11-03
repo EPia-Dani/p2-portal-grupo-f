@@ -24,7 +24,7 @@ namespace Player
         }
 
         private void OnJump(InputValue value)
-        {
+        { 
             EventBus<JumpEvent>.Invoke(new JumpEvent { value = value.isPressed });
         }
         
@@ -49,12 +49,9 @@ namespace Player
         }
 
         private void OnInteract(InputValue value)
-        { 
-            if (value.isPressed)
-            {
-                EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Interact);
-
-            }
+        {
+            EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Interact);
+           
         }
     }
 }
