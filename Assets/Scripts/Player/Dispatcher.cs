@@ -49,8 +49,12 @@ namespace Player
         }
 
         private void OnInteract(InputValue value)
-        {
-            EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Interact);
+        { 
+            if (value.isPressed)
+            {
+                EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Interact);
+
+            }
         }
     }
 }

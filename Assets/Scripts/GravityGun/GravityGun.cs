@@ -15,25 +15,22 @@ using UnityEngine;
         private Rigidbody heldRb;
         private float originalDrag;
         private float hoverOffset;
+      
     
-        void OnEnable()
+        void Start()
         {
+            playerCamera = Camera.main;
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Interact, HandleInteract);
         }
-    
+        
         void OnDisable()
         {
             EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Interact, HandleInteract);
         }
     
-        void Start()
-        {
-            Debug.Log("TryPick");
-            playerCamera = Camera.main;
-        }
-    
         void HandleInteract()
         {
+            Debug.Log("TryPick");
             if (heldRb == null)
                 TryPick();
             else
