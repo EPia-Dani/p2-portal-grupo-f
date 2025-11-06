@@ -40,12 +40,12 @@ namespace Player
 
         private void OnPortalBlue(InputValue value)
         {
-            EventBus<ShootEvent>.Invoke(new ShootEvent { value = value.isPressed });
+            EventBus<ShootBlueEvent>.Invoke(new ShootBlueEvent { value = value.isPressed });
         }
 
         private void OnPortalOrange(InputValue value)
         {
-            EventBus<ShootEvent>.Invoke(new ShootEvent { value = value.isPressed });
+            EventBus<ShootOrangeEvent>.Invoke(new ShootOrangeEvent { value = value.isPressed });
         }
 
         private void OnInteract(InputValue value)

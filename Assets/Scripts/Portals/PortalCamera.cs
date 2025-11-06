@@ -7,6 +7,7 @@ namespace Portals
     {
         private Transform _cameraTransform;
         private Transform _playerTransform;
+        private Camera _camera;
         
         [SerializeField]
         private GameObject portal;
@@ -18,6 +19,8 @@ namespace Portals
             _playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
             if (Camera.main) _cameraTransform = Camera.main.transform;
+            
+            _camera = GetComponent<Camera>();
         }
 
         void Update()
@@ -32,6 +35,7 @@ namespace Portals
             var unProjectedCameraRotation = otherPortal.transform.TransformDirection(relativePlayerRotation);
             transform.forward = unProjectedCameraRotation;
             
+            _camera.nearClipPlane = Vector3.Distance(transform.position, otherPortal.transform.position) + 0.05f;
         }
     }
 }

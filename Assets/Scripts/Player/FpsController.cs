@@ -177,7 +177,8 @@ namespace Player
             EventBus<SprintEvent>.Subscribe(_onSprint);
             EventBus<MoveEvent>.Subscribe(_onMove);
             EventBus<LookEvent>.Subscribe(_onLook);
-            EventBus<ShootEvent>.Subscribe(TryShoot);
+            EventBus<ShootBlueEvent>.Subscribe(TryShootBluePortal);
+            EventBus<ShootOrangeEvent>.Subscribe(TryShootOrangePortal);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Death, OnPlayerDeath);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Respawn, OnPlayerRespawn);
 
@@ -437,30 +438,35 @@ namespace Player
             }
         }
 
-        private void TryShoot(ShootEvent e)
+        private void TryShootBluePortal(ShootBlueEvent e)
         {
             if (e.value)
             {
                 if (_canShoot && !_isDead)
                 {
                     EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Gun);
-                    StartCoroutine(Shoot());
+                    StartCoroutine(Shoot(PortalColor.Blue));
+                }
+            }
+        }
+        
+        private void TryShootOrangePortal(ShootOrangeEvent e)
+        {
+            if (e.value)
+            {
+                if (_canShoot && !_isDead)
+                {
+                    EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Gun);
+                    StartCoroutine(Shoot(PortalColor.Orange));
                 }
             }
         }
 
-        private void OnBulletCountChangedEvent(BulletEvent e)
-        {
-            bulletCount = e.value;
-        }
-
-        private IEnumerator Shoot()
+        private IEnumerator Shoot(PortalColor portalColor)
         {
             _canShoot = false;
         
             yield return new WaitForSeconds(shotStartupTime);
-            
-            Debug.Log("Pew Pew");
         
             // audioSource.PlayOneShot(shootClip);
             
@@ -478,10 +484,20 @@ namespace Player
             
             if (hit.collider)
             {
-                
-                
-                portalBlue.transform.position = hit.point + hit.normal * 0.01f;
-                portalBlue.transform.rotation = Quaternion.LookRotation(hit.normal);
+                var destPosition = hit.point + hit.normal * 0.01f;
+                var destRotation = Quaternion.LookRotation(hit.normal);
+
+                switch (portalColor)
+                {
+                    case PortalColor.Blue:
+                        portalBlue.transform.position = destPosition;
+                        portalBlue.transform.rotation = destRotation;
+                        break;
+                    case PortalColor.Orange:
+                        portalOrange.transform.position = destPosition;
+                        portalOrange.transform.rotation = destRotation;
+                        break;
+                }
             }
         
             yield return new WaitForSeconds(recoilTime);
@@ -496,8 +512,14 @@ namespace Player
             EventBus<SprintEvent>.Unsubscribe(_onSprint);
             EventBus<MoveEvent>.Unsubscribe(_onMove);
             EventBus<LookEvent>.Unsubscribe(_onLook);
-            EventBus<ShootEvent>.Unsubscribe(TryShoot);
+            EventBus<ShootBlueEvent>.Unsubscribe(TryShootBluePortal);
             EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Death, OnPlayerDeath);
         }
+    }
+    
+    public enum PortalColor
+    {
+        Blue,
+        Orange
     }
 }

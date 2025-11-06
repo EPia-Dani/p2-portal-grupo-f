@@ -28,7 +28,12 @@ namespace Player
         public Vector2 value;
     }
 
-    public struct ShootEvent : IEvent
+    public struct ShootBlueEvent : IEvent
+    {
+        public bool value;
+    }
+    
+    public struct ShootOrangeEvent : IEvent
     {
         public bool value;
     }
