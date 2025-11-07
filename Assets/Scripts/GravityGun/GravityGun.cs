@@ -6,10 +6,10 @@ using UnityEngine;
 public class GravityGun : MonoBehaviour
 {
     public float pickRange = 5f;
-    public float holdDistance = 2f;
     public float holdSmooth = 10f;
     public float hoverAmplitude = 0.15f;
     public float hoverSpeed = 2f;
+    public float holdDistance;
 
     [Header("Ground Collision")]
     public LayerMask groundMask = ~0;
@@ -24,7 +24,6 @@ public class GravityGun : MonoBehaviour
     private float hoverOffset;
 
     private Vector3 moveVelocity = Vector3.zero;
-    private RigidbodyInterpolation originalInterpolation = RigidbodyInterpolation.None;
 
     void Start()
     {
@@ -60,9 +59,7 @@ public class GravityGun : MonoBehaviour
                 {
                     heldRb = rb;
                     originalDrag = heldRb.linearDamping;
-
-                    originalInterpolation = heldRb.interpolation;
-                    heldRb.interpolation = RigidbodyInterpolation.Interpolate;
+                    holdDistance = Vector3.Distance(playerCamera.transform.position, heldRb.position);
 
                     heldRb.useGravity = false;
                     heldRb.linearDamping = 10f;
@@ -81,7 +78,6 @@ public class GravityGun : MonoBehaviour
         heldRb.useGravity = true;
         heldRb.linearDamping = originalDrag;
         heldRb.angularDamping = 0.05f;
-        heldRb.interpolation = originalInterpolation;
 
         heldRb = null;
         moveVelocity = Vector3.zero;
@@ -113,11 +109,14 @@ public class GravityGun : MonoBehaviour
             }
         }
 
-        float dt = Time.fixedDeltaTime;
-        Vector3 newPos = Vector3.SmoothDamp(heldRb.position, targetPos, ref moveVelocity, Mathf.Max(0.0001f, positionSmoothTime), Mathf.Infinity, dt);
-        heldRb.MovePosition(newPos);
+        Vector3 direction = targetPos - heldRb.position;
+        float distance = direction.magnitude;
+
+        float forceMagnitude = distance * holdSmooth;
+        heldRb.AddForce(direction.normalized * forceMagnitude, ForceMode.VelocityChange);
+        heldRb.linearVelocity *= 0.9f;
 
         Quaternion targetRot = Quaternion.LookRotation(playerCamera.transform.forward, playerCamera.transform.up);
-        heldRb.MoveRotation(Quaternion.Slerp(heldRb.rotation, targetRot, dt * holdSmooth));
+        heldRb.MoveRotation(Quaternion.Slerp(heldRb.rotation, targetRot, Time.fixedDeltaTime*holdSmooth));
     }
 }

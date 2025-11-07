@@ -51,7 +51,7 @@ namespace Player
         private void OnInteract(InputValue value)
         {
             EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Interact);
-           
+
         }
     }
 }
