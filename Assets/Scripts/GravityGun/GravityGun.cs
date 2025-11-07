@@ -13,10 +13,10 @@ public class GravityGun : MonoBehaviour
 
     [Header("Ground Collision")]
     public LayerMask groundMask = ~0;
-    public float groundClearance = 0.05f; 
+    public float groundClearance = 0.05f;
 
     [Header("Smoothing")]
-    public float positionSmoothTime = 0.05f; 
+    public float positionSmoothTime = 0.05f;
 
     private Camera playerCamera;
     private Rigidbody heldRb;
@@ -117,6 +117,6 @@ public class GravityGun : MonoBehaviour
         heldRb.linearVelocity *= 0.9f;
 
         Quaternion targetRot = Quaternion.LookRotation(playerCamera.transform.forward, playerCamera.transform.up);
-        heldRb.MoveRotation(Quaternion.Slerp(heldRb.rotation, targetRot, Time.fixedDeltaTime*holdSmooth));
+        heldRb.MoveRotation(Quaternion.Slerp(heldRb.rotation, targetRot, Time.fixedDeltaTime * holdSmooth));
     }
 }
