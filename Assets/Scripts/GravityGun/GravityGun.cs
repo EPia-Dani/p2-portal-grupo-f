@@ -88,8 +88,7 @@ public class GravityGun : MonoBehaviour
         if (heldRb == null || playerCamera == null) return;
 
         Vector3 targetPos = playerCamera.transform.position + playerCamera.transform.forward * holdDistance;
-        hoverOffset = Mathf.Sin(Time.time * hoverSpeed) * hoverAmplitude;
-        targetPos += playerCamera.transform.up * hoverOffset;
+
 
         Collider heldCol = heldRb.GetComponent<Collider>();
         if (heldCol != null)
@@ -114,7 +113,7 @@ public class GravityGun : MonoBehaviour
 
         float forceMagnitude = distance * holdSmooth;
         heldRb.AddForce(direction.normalized * forceMagnitude, ForceMode.VelocityChange);
-        heldRb.linearVelocity *= 0.9f;
+        heldRb.linearVelocity *= 0.85f;
 
         Quaternion targetRot = Quaternion.LookRotation(playerCamera.transform.forward, playerCamera.transform.up);
         heldRb.MoveRotation(Quaternion.Slerp(heldRb.rotation, targetRot, Time.fixedDeltaTime * holdSmooth));
