@@ -7,8 +7,7 @@ public class GravityGun : MonoBehaviour
 {
     public float pickRange = 5f;
     public float holdSmooth = 10f;
-    public float hoverAmplitude = 0.15f;
-    public float hoverSpeed = 2f;
+    public float dragSpeed = 0.7f;
     public float holdDistance;
 
     [Header("Ground Collision")]
@@ -17,6 +16,7 @@ public class GravityGun : MonoBehaviour
 
     [Header("Smoothing")]
     public float positionSmoothTime = 0.05f;
+    public float catchUpSpeed = 5f;
 
     private Camera playerCamera;
     private Rigidbody heldRb;
@@ -108,13 +108,19 @@ public class GravityGun : MonoBehaviour
             }
         }
 
-        Vector3 direction = targetPos - heldRb.position;
+        /*Vector3 direction = targetPos - heldRb.position;
         float distance = direction.magnitude;
 
         float forceMagnitude = distance * holdSmooth;
         heldRb.AddForce(direction.normalized * forceMagnitude, ForceMode.VelocityChange);
-        heldRb.linearVelocity *= 0.85f;
-
+        heldRb.linearVelocity *= dragSpeed;*/
+        
+        Vector3 nextPos = Vector3.SmoothDamp(heldRb.position, targetPos, ref moveVelocity, positionSmoothTime, catchUpSpeed, Time.fixedDeltaTime);
+        Vector3 desiredVelocity = (nextPos - heldRb.position) / Time.fixedDeltaTime;
+        desiredVelocity = Vector3.ClampMagnitude(desiredVelocity, catchUpSpeed);
+        
+        heldRb.linearVelocity = desiredVelocity;
+        
         Quaternion targetRot = Quaternion.LookRotation(playerCamera.transform.forward, playerCamera.transform.up);
         heldRb.MoveRotation(Quaternion.Slerp(heldRb.rotation, targetRot, Time.fixedDeltaTime * holdSmooth));
     }
