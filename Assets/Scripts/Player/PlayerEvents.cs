@@ -69,6 +69,17 @@ namespace Player
         public bool value;
     }
     
+    public struct PortalEventBlue : IEvent
+    {
+        public Vector3 destPosition;
+        public Quaternion destRotation;
+    }
+    
+    public struct PortalEventOrange : IEvent
+    {
+        public Vector3 destPosition;
+        public Quaternion destRotation;
+    }
     
 
     public enum PlayerEventsEnum

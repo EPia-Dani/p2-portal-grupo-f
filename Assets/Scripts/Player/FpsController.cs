@@ -475,8 +475,8 @@ namespace Player
             _recoilRotationOffset = _recoilRotationKickback + new Vector3(_recoilVerticalRotation, 0f, 0f);
         
             var target = _mainCamera.ScreenToWorldPoint(new Vector3(
-                _mainCamera.pixelWidth * (0.5f + Random.Range(-shotSpread, shotSpread) / _mainCamera.aspect),
-                _mainCamera.pixelHeight * (0.5f + Random.Range(-shotSpread, shotSpread)),
+                _mainCamera.pixelWidth * (0.5f),
+                _mainCamera.pixelHeight * (0.5f),
                 .3f)) - _mainCamera.transform.position;
         
             Physics.Raycast(_mainCamera.transform.position, target,
@@ -490,12 +490,18 @@ namespace Player
                 switch (portalColor)
                 {
                     case PortalColor.Blue:
-                        portalBlue.transform.position = destPosition;
-                        portalBlue.transform.rotation = destRotation;
+                        EventBus<PortalEventBlue>.Invoke(new PortalEventBlue
+                        {
+                            destPosition = destPosition,
+                            destRotation = destRotation
+                        });
                         break;
                     case PortalColor.Orange:
-                        portalOrange.transform.position = destPosition;
-                        portalOrange.transform.rotation = destRotation;
+                        EventBus<PortalEventOrange>.Invoke(new PortalEventOrange
+                        {
+                            destPosition = destPosition,
+                            destRotation = destRotation
+                        });
                         break;
                 }
             }
