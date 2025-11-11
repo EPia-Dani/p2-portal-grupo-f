@@ -25,10 +25,13 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _FresnelPower: 0.85
-    - _Intensity: 2.6
-    - _ScrollSpeed: 1
+    - _CoreSize: 0.3
+    - _FresnelPower: 5
+    - _GlowSize: 1
+    - _Intensity: 1.13
+    - _ScrollSpeed: 0.9
     m_Colors:
     - _Color: {r: 1, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 1, g: 1, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
