@@ -53,5 +53,11 @@ namespace Player
             EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Interact);
 
         }
+        
+        private void OnShoot(InputValue value)
+        {
+            EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Shoot);
+        }
+        
     }
 }

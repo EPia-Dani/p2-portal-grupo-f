@@ -88,6 +88,7 @@ namespace Player
         Hittable,
         Death,
         Respawn,
-        Gun
+        Gun,
+        Shoot
     }
 }

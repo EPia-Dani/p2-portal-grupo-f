@@ -6,8 +6,9 @@ namespace GravityGun
 {
     public class GravityGun : MonoBehaviour
     {
-        public float pickRange = 5f;
-
+        
+        public float shootForce = 10f;
+        
         [Header("Ground Collision")]
         public float groundClearance = 0.05f;
 
@@ -32,12 +33,14 @@ namespace GravityGun
             playerController = playerTransform.GetComponent<CharacterController>();
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Interact, HandleInteract);
             EventBus<DraggableEvent>.Subscribe(HandleDrag);
+            EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Shoot, HandleShoot);
         }
 
         private void OnDisable()
         {
             EventBus<DraggableEvent>.Unsubscribe(HandleDrag);
             EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Interact, HandleInteract);
+            EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Shoot, HandleShoot);
         }
 
         private void HandleInteract()
@@ -50,6 +53,12 @@ namespace GravityGun
         {
             if (heldObj.rb == null)
                 Pick(e);
+        }
+        
+        private void HandleShoot()
+        {
+            if (heldObj.rb != null)
+                Shoot();
         }
 
         private void Pick(DraggableEvent e)
@@ -73,6 +82,21 @@ namespace GravityGun
             heldObj.rb.useGravity = true;
             heldObj.rb.linearDamping = originalDrag;
             heldObj.rb.angularDamping = originalAngularDrag;
+
+            heldObj.rb = null;
+        }
+        
+        private void Shoot()
+        {
+            if (heldObj.rb == null) return;
+
+            heldObj.rb.useGravity = true;
+            heldObj.rb.linearDamping = originalDrag;
+            heldObj.rb.angularDamping = originalAngularDrag;
+
+            Vector3 shootDirection = playerCamera.transform.forward;
+
+            heldObj.rb.AddForce(shootDirection * shootForce, ForceMode.Impulse);
 
             heldObj.rb = null;
         }
