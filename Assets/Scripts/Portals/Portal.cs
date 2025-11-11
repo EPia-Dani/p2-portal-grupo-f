@@ -152,6 +152,7 @@ namespace Portals
                 yield return null;
             }
             portalRenderer.transform.localScale = targetScale;
+            frameRenderer.transform.localScale = targetScale;
         }
         
         public void ClearPortal()
