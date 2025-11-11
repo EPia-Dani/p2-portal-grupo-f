@@ -112,6 +112,7 @@ namespace Player
         private float _smoothFovVelocity;
         private Routine _jumpBufferRoutine;
         private Routine _coyoteTimeRoutine;
+        private Routine _shootRoutine;
         private GameObject _hand;
         private Vector3 _handBaseLocalPosition;
         private Vector3 _bobVelocity;
@@ -191,12 +192,21 @@ namespace Player
             _isDead = true;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            StopAllCoroutines();
+            _shootRoutine.Stop();
+
+            Routine.Create(Respawn()).Run();
 
             if (footstepsAudioSource != null && footstepsAudioSource.isPlaying)
             {
                 footstepsAudioSource.Stop();
             }
+        }
+
+        private IEnumerator Respawn()
+        {
+            yield return new WaitForSeconds(1f);
+            OnPlayerRespawn();
+            _player.transform.position = new Vector3(0, 1, 0);
         }
 
         public void OnPlayerRespawn()
@@ -445,7 +455,7 @@ namespace Player
                 if (_canShoot && !_isDead)
                 {
                     EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Gun);
-                    StartCoroutine(Shoot(PortalColor.Blue));
+                    _shootRoutine = Routine.Create(Shoot(PortalColor.Blue)).Run();
                 }
             }
         }
@@ -457,7 +467,7 @@ namespace Player
                 if (_canShoot && !_isDead)
                 {
                     EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Gun);
-                    StartCoroutine(Shoot(PortalColor.Orange));
+                    _shootRoutine = Routine.Create(Shoot(PortalColor.Orange)).Run();
                 }
             }
         }

@@ -31,45 +31,39 @@ namespace GravityGun
             playerTransform = transform.root;
             playerController = playerTransform.GetComponent<CharacterController>();
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Interact, HandleInteract);
+            EventBus<DraggableEvent>.Subscribe(HandleDrag);
         }
 
         private void OnDisable()
         {
+            EventBus<DraggableEvent>.Unsubscribe(HandleDrag);
             EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Interact, HandleInteract);
         }
 
         private void HandleInteract()
         {
-            if (heldObj.rb == null)
-                TryPick();
-            else
+            if (heldObj.rb != null)
                 Drop();
         }
 
-        private void TryPick()
+        private void HandleDrag(DraggableEvent e)
         {
-            if (playerCamera == null) return;
+            if (heldObj.rb == null)
+                Pick(e);
+        }
 
-            var ray = playerCamera.ScreenPointToRay(new Vector2(Screen.width / 2f, Screen.height / 2f));
-            if (Physics.Raycast(ray, out RaycastHit hit, pickRange))
-            {
-                if (hit.transform.GetComponent<DraggableObject>())
-                {
-                    var rb = hit.rigidbody;
-                    if (rb != null)
-                    {
-                        originalDrag = rb.linearDamping;
-                        originalAngularDrag = rb.angularDamping;
-                        holdDistance = Vector3.Distance(playerCamera.transform.position, rb.position);
+        private void Pick(DraggableEvent e)
+        {
+            var (rb, collider) = e.objectToHold;
+            originalDrag = rb.linearDamping;
+            originalAngularDrag = rb.angularDamping;
+            holdDistance = Vector3.Distance(playerCamera.transform.position, rb.position);
 
-                        rb.useGravity = false;
-                        rb.linearDamping = 2f;
-                        rb.angularDamping = 5f;
+            rb.useGravity = false;
+            rb.linearDamping = 2f;
+            rb.angularDamping = 5f;
 
-                        heldObj = (rb, hit.collider);
-                    }
-                }
-            }
+            heldObj = (rb, collider);
         }
 
         private void Drop()

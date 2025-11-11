@@ -25,13 +25,18 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _BandFrequency: 3
     - _CoreSize: 0.3
     - _FresnelPower: 5
     - _GlowSize: 1
     - _Intensity: 1.13
+    - _OutlineSize: 0.7
     - _ScrollSpeed: 0.9
     m_Colors:
-    - _Color: {r: 1, g: 0, b: 0, a: 1}
-    - _OutlineColor: {r: 1, g: 1, b: 0, a: 1}
+    - _BaseColor: {r: 0.46540874, g: 0.062932536, b: 0.09176632, a: 1}
+    - _Color: {r: 0.6226415, g: 0.13901739, b: 0.17321916, a: 1}
+    - _CoreColor: {r: 0.31446534, g: 0.028677626, b: 0.028677626, a: 1}
+    - _InnerColor: {r: 0.59748423, g: 0.17425516, b: 0.16722038, a: 1}
+    - _OutlineColor: {r: 0.38364768, g: 0.051876813, b: 0.0598525, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
