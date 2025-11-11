@@ -6,92 +6,35 @@ using Player;
 namespace GravityGun
 {
 
-    public class CubeSpawner : MonoBehaviour
+    public class CubeSpawner : MonoBehaviour, Interactable
     {
         public GameObject cubePrefab;
         public float spawnClearance = 0.01f;
 
-        private Camera playerCamera;
         public float pickRange = 5f;
 
         [Header("Limit")]
         public int maxCubes;
 
         private readonly List<GameObject> spawnedCubes = new List<GameObject>();
+        
 
-        void Start()
+        private void SpawnCube()
         {
-            playerCamera = Camera.main;
-            EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Interact, HandleInteract);
+            spawnedCubes.RemoveAll(item => item == null);
+            Collider spawnerCol = GetComponent<Collider>();
+            var topY = spawnerCol.bounds.max.y;
+            GameObject cube = Instantiate(cubePrefab, transform.position, Quaternion.identity);
+            Collider cubeCol = cube.GetComponent<Collider>();
+            float halfHeight = cubeCol.bounds.extents.y;
+            Vector3 spawnPos = new Vector3(transform.position.x, topY + halfHeight + spawnClearance, transform.position.z);
+            cube.transform.position = spawnPos;
+            spawnedCubes.Add(cube);
         }
 
-        void OnDisable()
-        {
-            EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Interact, HandleInteract);
-        }
-
-        void HandleInteract()
+        public void Interact()
         {
             SpawnCube();
-        }
-
-        void SpawnCube()
-        {
-            if (cubePrefab == null)
-            {
-                Debug.LogWarning("CubeSpawner: cubePrefab is not assigned.");
-                return;
-            }
-
-            spawnedCubes.RemoveAll(item => item == null);
-
-            if (spawnedCubes.Count >= maxCubes)
-            {
-                Debug.Log("CubeSpawner: max cubes reached, not spawning.");
-                return;
-            }
-
-            if (playerCamera == null)
-            {
-                Debug.LogWarning("CubeSpawner: playerCamera is null.");
-                return;
-            }
-
-            Ray ray = playerCamera.ScreenPointToRay(new Vector2(Screen.width / 2f, Screen.height / 2f));
-            if (Physics.Raycast(ray, out RaycastHit hit, pickRange))
-            {
-                if (hit.collider.GetComponent<CubeSpawner>() != null)
-                {
-                    float topY = transform.position.y;
-                    Collider spawnerCol = GetComponent<Collider>();
-                    if (spawnerCol != null) topY = spawnerCol.bounds.max.y;
-
-                    GameObject cube = Instantiate(cubePrefab, transform.position, Quaternion.identity);
-
-                    Collider cubeCol = cube.GetComponent<Collider>();
-                    if (cubeCol == null)
-                    {
-                        cubeCol = cube.AddComponent<BoxCollider>();
-                    }
-
-                    Rigidbody rb = cube.GetComponent<Rigidbody>();
-                    if (rb == null)
-                    {
-                        rb = cube.AddComponent<Rigidbody>();
-                    }
-
-                    float halfHeight = cubeCol.bounds.extents.y;
-                    Vector3 spawnPos = new Vector3(transform.position.x, topY + halfHeight + spawnClearance, transform.position.z);
-                    cube.transform.position = spawnPos;
-
-                    if (cube.GetComponent<DraggableObject>() == null)
-                    {
-                        cube.AddComponent<DraggableObject>();
-                    }
-
-                    spawnedCubes.Add(cube);
-                }
-            }
         }
     }
 }

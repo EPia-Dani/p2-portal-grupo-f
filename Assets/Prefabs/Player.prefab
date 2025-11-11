@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 4126934019438946893}
   - component: {fileID: 5352948393545506428}
   - component: {fileID: 9011724039233810153}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Input
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 7858042328398300942}
   - component: {fileID: 1964691048690553821}
   - component: {fileID: 8458703365399851568}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: HandCam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249,7 +249,7 @@ GameObject:
   - component: {fileID: 5984286103223370032}
   - component: {fileID: 8553493539334387922}
   - component: {fileID: 8072460698084822285}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -386,7 +386,7 @@ GameObject:
   - component: {fileID: 1932445393333751791}
   - component: {fileID: 2273247317508605723}
   - component: {fileID: 1086457921630251331}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -524,7 +524,8 @@ GameObject:
   - component: {fileID: 1487945188913534072}
   - component: {fileID: 1374872660566481918}
   - component: {fileID: 4948006915978640251}
-  m_Layer: 8
+  - component: {fileID: 8303105082516963283}
+  m_Layer: 0
   m_Name: Logic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -621,15 +622,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickRange: 5
-  holdSmooth: 10
-  hoverAmplitude: 0.15
-  hoverSpeed: 2
-  holdDistance: 2
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
   groundClearance: 0.05
-  positionSmoothTime: 0.05
+  springStrength: 100
+  springDamping: 10
+  maxSpeed: 30
+  rotationSpeed: 10
+--- !u!114 &8303105082516963283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7075149492844615429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 099fa72d2187434e96a06d81510b0d0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9068138246549944969
 GameObject:
   m_ObjectHideFlags: 0
@@ -640,7 +649,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5965464147493317855}
   - component: {fileID: 1815287537519114680}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: PitchController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
