@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using UnityEngine;
 using Core.EventBus;
@@ -6,8 +5,6 @@ using Player;
 
 namespace GravityGun
 {
-    public GameObject cubePrefab;
-    public float spawnClearance = 0.01f;
 
     public class CubeSpawner : MonoBehaviour
     {
@@ -28,17 +25,9 @@ namespace GravityGun
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Interact, HandleInteract);
         }
 
-        spawnedCubes.RemoveAll(item => item == null);
-
-        // If we've reached the limit, destroy the oldest spawned cube to make room.
-        if (maxCubes > 0 && spawnedCubes.Count >= maxCubes)
+        void OnDisable()
         {
-            GameObject oldest = spawnedCubes[0];
-            if (oldest != null)
-            {
-                Destroy(oldest);
-            }
-            spawnedCubes.RemoveAt(0);
+            EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Interact, HandleInteract);
         }
 
         void HandleInteract()
