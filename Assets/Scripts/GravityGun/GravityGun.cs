@@ -115,10 +115,20 @@ public class GravityGun : MonoBehaviour
         heldRb.AddForce(direction.normalized * forceMagnitude, ForceMode.VelocityChange);
         heldRb.linearVelocity *= dragSpeed;*/
         
-        Vector3 nextPos = Vector3.SmoothDamp(heldRb.position, targetPos, ref moveVelocity, positionSmoothTime, catchUpSpeed, Time.fixedDeltaTime);
-        Vector3 desiredVelocity = (nextPos - heldRb.position) / Time.fixedDeltaTime;
-        desiredVelocity = Vector3.ClampMagnitude(desiredVelocity, catchUpSpeed);
+        // Vector3 nextPos = Vector3.SmoothDamp(heldRb.position, targetPos, ref moveVelocity, positionSmoothTime, catchUpSpeed, Time.fixedDeltaTime);
+        // Vector3 desiredVelocity = (nextPos - heldRb.position) / Time.fixedDeltaTime;
+        // desiredVelocity = Vector3.ClampMagnitude(desiredVelocity, catchUpSpeed);
+        //
+        // heldRb.linearVelocity = desiredVelocity;
         
+        Vector3 direction = targetPos - heldRb.position;
+        float distance = direction.magnitude;
+        
+        float referenceDistance = Mathf.Max(0.01f, holdDistance);
+        float speedPercent = Mathf.Clamp01(distance / referenceDistance);
+        float speed = catchUpSpeed * speedPercent;
+        
+        Vector3 desiredVelocity = distance > 0.00001f ? direction.normalized * speed : Vector3.zero;
         heldRb.linearVelocity = desiredVelocity;
         
         Quaternion targetRot = Quaternion.LookRotation(playerCamera.transform.forward, playerCamera.transform.up);

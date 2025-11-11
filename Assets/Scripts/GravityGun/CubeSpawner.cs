@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 using Core.EventBus;
@@ -6,7 +7,7 @@ using Player;
 public class CubeSpawner : MonoBehaviour
 {
     public GameObject cubePrefab;
-    public float spawnClearance = 0.01f; 
+    public float spawnClearance = 0.01f;
 
     private Camera playerCamera;
     public float pickRange = 5f;
@@ -42,10 +43,15 @@ public class CubeSpawner : MonoBehaviour
 
         spawnedCubes.RemoveAll(item => item == null);
 
-        if (spawnedCubes.Count >= maxCubes)
+        // If we've reached the limit, destroy the oldest spawned cube to make room.
+        if (maxCubes > 0 && spawnedCubes.Count >= maxCubes)
         {
-            Debug.Log("CubeSpawner: max cubes reached, not spawning.");
-            return;
+            GameObject oldest = spawnedCubes[0];
+            if (oldest != null)
+            {
+                Destroy(oldest);
+            }
+            spawnedCubes.RemoveAt(0);
         }
 
         if (playerCamera == null)
