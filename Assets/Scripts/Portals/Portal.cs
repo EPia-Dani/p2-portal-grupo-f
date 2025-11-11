@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Core.EventBus;
@@ -16,16 +17,24 @@ namespace Portals
     {
         [SerializeField]
         private PortalColor portalColor;
-        
         [SerializeField]
         private MeshRenderer portalRenderer;
+        [SerializeField]
+        private MeshRenderer frameRenderer;
+        
+        [SerializeField]
+        private Vector3 m_targetScale;
+        [SerializeField]
+        private float m_portalGrowthDuration = 0.15f;
+        
+        private Camera mainCamera;
         
         public bool IsPlaced { get; private set; }
         
         public MeshRenderer Renderer => portalRenderer;
 
         public Transform portalCheckerParent;
-        public List<Transform> portalCheckers = new List<Transform>();
+        private List<Transform> portalCheckers = new List<Transform>();
 
         private void Awake()
         {
@@ -34,6 +43,12 @@ namespace Portals
             {
                 portalCheckers.Add(child);
             }
+            
+            // Set initial target scale to current scale of portal renderer
+            m_targetScale = portalRenderer.transform.localScale;
+            
+            // Set camera reference
+            mainCamera = Camera.main;
         }
 
         private void OnEnable()
@@ -81,10 +96,21 @@ namespace Portals
             // Check for valid placement using portal checkers
             foreach (var checker in portalCheckers)
             {
-                // Raycast from checker position backwards to see if it hits anything
-                if (!Physics.Raycast(checker.position, -checker.forward, out RaycastHit hit, 0.1f, LayerMask.GetMask("PortalAble")))
+                Vector3 directionToChecker = checker.position - mainCamera.transform.position;
+                float distanceToChecker = directionToChecker.magnitude +.5f;
+                
+                // Raycast from camera position towards checker position
+                if (Physics.Raycast(mainCamera.transform.position, directionToChecker.normalized, out var hit, distanceToChecker))
                 {
-                    // If checker does not hit, placement is invalid, return portal checkers to original position
+                    if (hit.collider.gameObject.layer != LayerMask.NameToLayer("PortalAble") && hit.collider.transform.parent != transform)
+                    {
+                        // If raycast hits something that is not PortalAble, placement is invalid
+                        portalCheckerParent.position = transform.position;
+                        portalCheckerParent.rotation = transform.rotation;
+                        return;
+                    }
+                } else { 
+                    // If raycast does not hit anything, placement is invalid
                     portalCheckerParent.position = transform.position;
                     portalCheckerParent.rotation = transform.rotation;
                     return;
@@ -104,6 +130,28 @@ namespace Portals
             {
                 portalRenderer.enabled = true;
             }
+            
+            // Start the portal growth effect
+            StartCoroutine(PortalGrowthEffect(m_portalGrowthDuration));
+        }
+        
+        public IEnumerator PortalGrowthEffect(float duration)
+        {
+            float elapsedTime = 0f;
+            Vector3 initialScale = Vector3.zero;
+            Vector3 targetScale = m_targetScale;
+            
+            while (elapsedTime < duration)
+            {
+                float t = elapsedTime / duration;
+                Vector3 nextScale = Vector3.Lerp(initialScale, targetScale, t);
+                portalRenderer.transform.localScale = nextScale;
+                frameRenderer.transform.localScale = nextScale;
+                
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+            portalRenderer.transform.localScale = targetScale;
         }
         
         public void ClearPortal()
@@ -116,4 +164,3 @@ namespace Portals
         }
     }
 }
-

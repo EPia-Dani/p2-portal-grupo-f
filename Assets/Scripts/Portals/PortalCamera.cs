@@ -35,7 +35,7 @@ namespace Portals
             var unProjectedCameraRotation = otherPortal.transform.TransformDirection(relativePlayerRotation);
             transform.forward = unProjectedCameraRotation;
             
-            _camera.nearClipPlane = Vector3.Distance(transform.position, otherPortal.transform.position) + 0.05f;
+            _camera.nearClipPlane = Vector3.Distance(transform.position, otherPortal.transform.position) - 0.05f;
         }
     }
 }
