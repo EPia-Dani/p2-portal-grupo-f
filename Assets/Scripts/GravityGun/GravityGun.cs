@@ -1,104 +1,100 @@
-using System;
 using Core.EventBus;
 using Player;
 using UnityEngine;
 
-public class GravityGun : MonoBehaviour
+namespace GravityGun
 {
-    public float pickRange = 5f;
-    public float holdSmooth = 10f;
-    public float dragSpeed = 0.7f;
-    public float holdDistance;
-
-    [Header("Ground Collision")]
-    public LayerMask groundMask = ~0;
-    public float groundClearance = 0.05f;
-
-    [Header("Smoothing")]
-    public float positionSmoothTime = 0.05f;
-    public float catchUpSpeed = 5f;
-
-    private Camera playerCamera;
-    private Rigidbody heldRb;
-    private float originalDrag;
-    private float hoverOffset;
-
-    private Vector3 moveVelocity = Vector3.zero;
-
-    void Start()
+    public class GravityGun : MonoBehaviour
     {
-        playerCamera = Camera.main;
-        EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Interact, HandleInteract);
-    }
+        public float pickRange = 5f;
 
-    void OnDisable()
-    {
-        EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Interact, HandleInteract);
-    }
+        [Header("Ground Collision")]
+        public float groundClearance = 0.05f;
 
-    void HandleInteract()
-    {
-        if (heldRb == null)
-            TryPick();
-        else
-            Drop();
-    }
+        [Header("Smoothing")]
+        public float springStrength = 100f;
+        public float springDamping = 10f;
+        public float maxSpeed = 30f;
+        public float rotationSpeed = 10f;
 
-    void TryPick()
-    {
-        if (playerCamera == null) return;
+        private Camera playerCamera;
+        private Transform playerTransform;
+        private CharacterController playerController;
+        private (Rigidbody rb, Collider collider) heldObj;
+        private float originalDrag;
+        private float originalAngularDrag;
+        private float holdDistance;
 
-        Ray ray = playerCamera.ScreenPointToRay(new Vector2(Screen.width / 2f, Screen.height / 2f));
-        if (Physics.Raycast(ray, out RaycastHit hit, pickRange))
+        private void Awake()
         {
-            var pickable = hit.collider.GetComponent<PickableCube>();
-            if (pickable != null)
+            playerCamera = Camera.main;
+            playerTransform = transform.root;
+            playerController = playerTransform.GetComponent<CharacterController>();
+            EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Interact, HandleInteract);
+        }
+
+        private void OnDisable()
+        {
+            EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Interact, HandleInteract);
+        }
+
+        private void HandleInteract()
+        {
+            if (heldObj.rb == null)
+                TryPick();
+            else
+                Drop();
+        }
+
+        private void TryPick()
+        {
+            if (playerCamera == null) return;
+
+            var ray = playerCamera.ScreenPointToRay(new Vector2(Screen.width / 2f, Screen.height / 2f));
+            if (Physics.Raycast(ray, out RaycastHit hit, pickRange))
             {
-                var rb = pickable.GetComponent<Rigidbody>();
-                if (rb != null)
+                if (hit.transform.GetComponent<DraggableObject>())
                 {
-                    heldRb = rb;
-                    originalDrag = heldRb.linearDamping;
-                    holdDistance = Vector3.Distance(playerCamera.transform.position, heldRb.position);
+                    var rb = hit.rigidbody;
+                    if (rb != null)
+                    {
+                        originalDrag = rb.linearDamping;
+                        originalAngularDrag = rb.angularDamping;
+                        holdDistance = Vector3.Distance(playerCamera.transform.position, rb.position);
 
-                    heldRb.useGravity = false;
-                    heldRb.linearDamping = 10f;
-                    heldRb.angularDamping = 10f;
+                        rb.useGravity = false;
+                        rb.linearDamping = 2f;
+                        rb.angularDamping = 5f;
 
-                    moveVelocity = Vector3.zero;
+                        heldObj = (rb, hit.collider);
+                    }
                 }
             }
         }
-    }
 
-    void Drop()
-    {
-        if (heldRb == null) return;
-
-        heldRb.useGravity = true;
-        heldRb.linearDamping = originalDrag;
-        heldRb.angularDamping = 0.05f;
-
-        heldRb = null;
-        moveVelocity = Vector3.zero;
-    }
-
-    void FixedUpdate()
-    {
-        if (heldRb == null || playerCamera == null) return;
-
-        Vector3 targetPos = playerCamera.transform.position + playerCamera.transform.forward * holdDistance;
-
-
-        Collider heldCol = heldRb.GetComponent<Collider>();
-        if (heldCol != null)
+        private void Drop()
         {
-            float bottomOffset = heldCol.bounds.extents.y;
+            if (heldObj.rb == null) return;
 
+            heldObj.rb.useGravity = true;
+            heldObj.rb.linearDamping = originalDrag;
+            heldObj.rb.angularDamping = originalAngularDrag;
+
+            heldObj.rb = null;
+        }
+
+        private void FixedUpdate()
+        {
+            if (heldObj.rb == null || playerCamera == null) return;
+
+            var targetPos = playerCamera.transform.position + playerCamera.transform.forward * holdDistance;
+
+            float bottomOffset = heldObj.collider.bounds.extents.y;
             float checkDistance = holdDistance + bottomOffset + 1f;
-            if (Physics.Raycast(targetPos, Vector3.down, out RaycastHit groundHit, checkDistance, groundMask))
+
+            if (Physics.Raycast(targetPos, Vector3.down, out var hit, checkDistance))
             {
-                float groundY = groundHit.point.y;
+                float groundY = hit.point.y;
                 float minCenterY = groundY + bottomOffset + groundClearance;
 
                 if (targetPos.y - bottomOffset < groundY + groundClearance)
@@ -106,22 +102,26 @@ public class GravityGun : MonoBehaviour
                     targetPos.y = minCenterY;
                 }
             }
+
+            var playerVelocity = playerController != null ? playerController.velocity : Vector3.zero;
+
+            var displacement = targetPos - heldObj.rb.position;
+            var springForce = displacement * springStrength;
+
+            var relativeVelocity = heldObj.rb.linearVelocity - playerVelocity;
+            var dampingForce = -relativeVelocity * springDamping;
+
+            var totalForce = springForce + dampingForce;
+            heldObj.rb.AddForce(totalForce, ForceMode.Acceleration);
+
+            if (heldObj.rb.linearVelocity.magnitude > maxSpeed)
+            {
+                heldObj.rb.linearVelocity = heldObj.rb.linearVelocity.normalized * maxSpeed;
+            }
+
+            var targetRot = Quaternion.LookRotation(playerCamera.transform.forward, playerCamera.transform.up);
+            var newRotation = Quaternion.Slerp(heldObj.rb.rotation, targetRot, Time.fixedDeltaTime * rotationSpeed);
+            heldObj.rb.MoveRotation(newRotation);
         }
-
-        /*Vector3 direction = targetPos - heldRb.position;
-        float distance = direction.magnitude;
-
-        float forceMagnitude = distance * holdSmooth;
-        heldRb.AddForce(direction.normalized * forceMagnitude, ForceMode.VelocityChange);
-        heldRb.linearVelocity *= dragSpeed;*/
-        
-        Vector3 nextPos = Vector3.SmoothDamp(heldRb.position, targetPos, ref moveVelocity, positionSmoothTime, catchUpSpeed, Time.fixedDeltaTime);
-        Vector3 desiredVelocity = (nextPos - heldRb.position) / Time.fixedDeltaTime;
-        desiredVelocity = Vector3.ClampMagnitude(desiredVelocity, catchUpSpeed);
-        
-        heldRb.linearVelocity = desiredVelocity;
-        
-        Quaternion targetRot = Quaternion.LookRotation(playerCamera.transform.forward, playerCamera.transform.up);
-        heldRb.MoveRotation(Quaternion.Slerp(heldRb.rotation, targetRot, Time.fixedDeltaTime * holdSmooth));
     }
 }
