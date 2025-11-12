@@ -12,7 +12,7 @@ namespace GravityGun
         {
             Debug.Log("Button");
             joint = GetComponent<ConfigurableJoint>();
-            initialPosition = transform.position;
+            initialPosition = transform.localPosition;
             pressed = false;
         }
 
@@ -22,18 +22,18 @@ namespace GravityGun
             Vector3 delta = transform.localPosition - initialPosition;
             float proj = Vector3.Dot(delta, Vector3.up.normalized);
             
+            Debug.Log(pressed);
             Debug.Log(proj);
-            Debug.Log(limit);
-
-            if (Mathf.Abs(proj) > limit)
+            
+            if (proj > limit)
             {
                 pressed = true;
-                Debug.Log("Pressed");
+                
             }
             else
             {
                 pressed = false;
-                Debug.Log("Not Pressed");
+                
             }
         }
     }
