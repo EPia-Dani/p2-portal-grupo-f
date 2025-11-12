@@ -47,7 +47,7 @@ namespace Player
 
                         // Calculate the rotation difference between portals
                         // This accounts for the full 3D rotation difference, not just forward direction
-                        Quaternion rotationDifference = destinationPortal.transform.rotation * Quaternion.Inverse(portal.rotation);
+                        Quaternion rotationDifference = Quaternion.FromToRotation(portal.forward, -destinationPortal.transform.forward);
                         
                         // Rotate the offset to match the destination portal's orientation
                         Vector3 rotatedOffset = rotationDifference * offset;
@@ -60,7 +60,7 @@ namespace Player
                         // Apply the rotation difference to the player's current rotation
                         EventBus<SetYawAndPitchEvent>.Invoke(new SetYawAndPitchEvent
                         {
-                            yaw = -newRotation.eulerAngles.y,
+                            yaw = newRotation.eulerAngles.y,
                             pitch = newRotation.eulerAngles.x
                         });
                         // transform.rotation = rotationDifference * transform.rotation;

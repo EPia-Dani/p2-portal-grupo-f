@@ -3,13 +3,11 @@ using UnityEngine;
 
 public class PortalTraversable : MonoBehaviour
 {
-    private Collider playerCollider;
-    private CharacterController characterController;
+    private Collider collider;
 
     private void Awake()
     {  
-        playerCollider = GetComponent<Collider>();
-        characterController = GetComponent<CharacterController>();
+        collider = GetComponent<Collider>();
     }
         
     private void OnTriggerEnter(Collider other)
@@ -17,7 +15,7 @@ public class PortalTraversable : MonoBehaviour
         // Handle trigger enter logic
         if (other.CompareTag("WallDisabler"))
         {
-            playerCollider.excludeLayers |= LayerMask.GetMask("PortalAble");
+            collider.excludeLayers |= LayerMask.GetMask("PortalAble");
         }
     }
     
@@ -59,7 +57,7 @@ public class PortalTraversable : MonoBehaviour
         // Handle trigger exit logic
         if (other.CompareTag("WallDisabler"))
         {
-            playerCollider.excludeLayers &= ~LayerMask.GetMask("PortalAble");
+            collider.excludeLayers &= ~LayerMask.GetMask("PortalAble");
         }
     }
 }
