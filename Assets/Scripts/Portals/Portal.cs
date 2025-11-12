@@ -21,6 +21,8 @@ namespace Portals
         private MeshRenderer portalRenderer;
         [SerializeField]
         private MeshRenderer frameRenderer;
+        [SerializeField]
+        public GameObject linkedPortal;
         
         [SerializeField]
         private Vector3 m_targetScale;

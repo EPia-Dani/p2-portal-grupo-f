@@ -240,6 +240,78 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
+--- !u!1001 &478240336
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 294833250742044009, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 294833250742044009, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 294833250742044009, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 294833250742044009, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 294833250742044009, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 294833250742044009, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 294833250742044009, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 294833250742044009, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 294833250742044009, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 294833250742044009, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4745889006244964124, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      propertyPath: m_Name
+      value: Companion
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4745889006244964124, guid: afd7202f45c906948ad4631005d1094d,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1161839048}
+  m_SourcePrefab: {fileID: 100100000, guid: afd7202f45c906948ad4631005d1094d, type: 3}
 --- !u!4 &537613898 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4680937501729544781, guid: 1cc61ca274239d348975c1ab4702f4bc,
@@ -371,6 +443,7 @@ MonoBehaviour:
   portalColor: 0
   portalRenderer: {fileID: 5784003170383628858}
   frameRenderer: {fileID: 1191078411}
+  linkedPortal: {fileID: 1915832867}
   m_targetScale: {x: 1, y: 1, z: 1}
   m_portalGrowthDuration: 0.15
   portalCheckerParent: {fileID: 1675312832}
@@ -653,6 +726,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1161839047 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4745889006244964124, guid: afd7202f45c906948ad4631005d1094d,
+    type: 3}
+  m_PrefabInstance: {fileID: 478240336}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1161839048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1161839047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf532d86f96fea4bacee2810b5225c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!23 &1191078411 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1817968323830798426, guid: 1cc61ca274239d348975c1ab4702f4bc,
@@ -710,7 +801,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 3, z: 0.2}
+  m_Size: {x: 2, y: 3, z: 0.3}
   m_Center: {x: 0, y: 0, z: 0.06}
 --- !u!1001 &1486587115
 PrefabInstance:
@@ -910,6 +1001,7 @@ MonoBehaviour:
   portalColor: 1
   portalRenderer: {fileID: 5784003170383628859}
   frameRenderer: {fileID: 761947306}
+  linkedPortal: {fileID: 987782978}
   m_targetScale: {x: 1, y: 1, z: 1}
   m_portalGrowthDuration: 0.15
   portalCheckerParent: {fileID: 537613898}
@@ -2199,3 +2291,4 @@ SceneRoots:
   - {fileID: 1486587115}
   - {fileID: 1155638694}
   - {fileID: 5784003170383628857}
+  - {fileID: 478240336}
