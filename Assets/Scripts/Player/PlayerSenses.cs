@@ -1,3 +1,4 @@
+using Core.EventBus;
 using Portals;
 using UnityEngine;
 
@@ -35,7 +36,7 @@ namespace Player
                 Plane portalPlane = new Plane(portal.forward, portal.position);
                 float distanceToPlane = portalPlane.GetDistanceToPoint(transform.position);
             
-                if (distanceToPlane < 0.1f)
+                if (distanceToPlane < 0.05f)
                 {
                     // Handle portal traversal
                     var destinationPortal = portal.GetComponent<Portal>().linkedPortal;
@@ -44,15 +45,25 @@ namespace Player
                         // Calculate the offset from the portal
                         Vector3 offset = transform.position - portal.position;
 
+                        // Calculate the rotation difference between portals
+                        // This accounts for the full 3D rotation difference, not just forward direction
+                        Quaternion rotationDifference = destinationPortal.transform.rotation * Quaternion.Inverse(portal.rotation);
+                        
                         // Rotate the offset to match the destination portal's orientation
-                        Quaternion rotationDifference =
-                            Quaternion.FromToRotation(portal.forward, destinationPortal.transform.forward);
                         Vector3 rotatedOffset = rotationDifference * offset;
-
-                        // Set the new position and rotation
-                        transform.position = destinationPortal.transform.position + rotatedOffset + destinationPortal.transform.forward*.1f;
-                        Vector3 newForward = rotationDifference * transform.forward;
-                        transform.rotation = Quaternion.LookRotation(newForward, Vector3.up);
+                        
+                        // Set the new position
+                        transform.position = destinationPortal.transform.position + rotatedOffset + destinationPortal.transform.forward * 0.01f;
+                        
+                        Quaternion newRotation = rotationDifference * transform.rotation;
+                        
+                        // Apply the rotation difference to the player's current rotation
+                        EventBus<SetYawAndPitchEvent>.Invoke(new SetYawAndPitchEvent
+                        {
+                            yaw = -newRotation.eulerAngles.y,
+                            pitch = newRotation.eulerAngles.x
+                        });
+                        // transform.rotation = rotationDifference * transform.rotation;
                     }
                 }
             }

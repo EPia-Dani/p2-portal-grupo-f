@@ -31,7 +31,7 @@ public class PortalTraversable : MonoBehaviour
             Plane portalPlane = new Plane(portal.forward, portal.position);
             float distanceToPlane = portalPlane.GetDistanceToPoint(transform.position);
             
-            if (distanceToPlane < 0.1f)
+            if (distanceToPlane < 0.05f)
             {
                 // Handle portal traversal
                 var destinationPortal = portal.GetComponent<Portal>().linkedPortal;
@@ -46,7 +46,7 @@ public class PortalTraversable : MonoBehaviour
                     Vector3 rotatedOffset = rotationDifference * offset;
 
                     // Set the new position and rotation
-                    transform.position = destinationPortal.transform.position + rotatedOffset;
+                    transform.position = destinationPortal.transform.position + rotatedOffset + destinationPortal.transform.forward*0.01f;
                     Vector3 newForward = rotationDifference * transform.forward;
                     transform.rotation = Quaternion.LookRotation(newForward, Vector3.up);
                 }

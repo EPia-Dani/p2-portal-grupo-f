@@ -81,6 +81,11 @@ namespace Player
         public Quaternion destRotation;
     }
     
+    public struct SetYawAndPitchEvent : IEvent
+    {
+        public float yaw;
+        public float pitch;
+    }
 
     public enum PlayerEventsEnum
     {

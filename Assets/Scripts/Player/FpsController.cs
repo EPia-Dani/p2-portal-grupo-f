@@ -181,7 +181,8 @@ namespace Player
             EventBus<ShootOrangeEvent>.Subscribe(TryShootOrangePortal);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Death, OnPlayerDeath);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Respawn, OnPlayerRespawn);
-
+            EventBus<SetYawAndPitchEvent>.Subscribe(SetYawAndPitch);
+            
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
@@ -256,6 +257,16 @@ namespace Player
             _pitch = Mathf.Clamp(_pitch, -89f, 89f);
 
             _yaw += _lookInput.x * _sensitivity;
+
+            _pitchController.SetPitch(_pitch, _invertPitch);
+            _player.transform.rotation = Quaternion.Euler(0, _yaw, 0);
+        }
+        
+        private void SetYawAndPitch(SetYawAndPitchEvent e)
+        {
+            _yaw = e.yaw;
+            _pitch = e.pitch;
+            _pitch = Mathf.Clamp(_pitch, -89f, 89f);
 
             _pitchController.SetPitch(_pitch, _invertPitch);
             _player.transform.rotation = Quaternion.Euler(0, _yaw, 0);

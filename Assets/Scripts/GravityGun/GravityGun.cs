@@ -17,6 +17,9 @@ namespace GravityGun
         public float springDamping = 10f;
         public float maxSpeed = 30f;
         public float rotationSpeed = 10f;
+        
+        [Header("Distance")]
+        public float maxHoldDistance = 15f;
 
         private Camera playerCamera;
         private Transform playerTransform;
@@ -140,6 +143,12 @@ namespace GravityGun
             var targetRot = Quaternion.LookRotation(playerCamera.transform.forward, playerCamera.transform.up);
             var newRotation = Quaternion.Slerp(heldObj.rb.rotation, targetRot, Time.fixedDeltaTime * rotationSpeed);
             heldObj.rb.MoveRotation(newRotation);
+
+            // Check distance and drop if too far
+            if (Vector3.Distance(playerCamera.transform.position, heldObj.rb.position) > maxHoldDistance)
+            {
+                Drop();
+            }
         }
     }
 }
