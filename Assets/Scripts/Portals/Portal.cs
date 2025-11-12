@@ -94,6 +94,8 @@ namespace Portals
             // Move portal checkers to the desired position and rotation
             portalCheckerParent.position = position;
             portalCheckerParent.rotation = rotation;
+
+            Vector3 controlNormal = Vector3.zero;
             
             // Check for valid placement using portal checkers
             foreach (var checker in portalCheckers)
@@ -104,6 +106,17 @@ namespace Portals
                 // Raycast from camera position towards checker position
                 if (Physics.Raycast(mainCamera.transform.position, directionToChecker.normalized, out var hit, distanceToChecker))
                 {
+                    if (controlNormal == Vector3.zero)
+                    {
+                        controlNormal = hit.normal;
+                    } else if (controlNormal != hit.normal)
+                    {
+                        // If normals differs, placement is invalid
+                        portalCheckerParent.position = transform.position;
+                        portalCheckerParent.rotation = transform.rotation;
+                        return;
+                    }
+                    
                     if (hit.collider.gameObject.layer != LayerMask.NameToLayer("PortalAble") && hit.collider.transform.parent != transform)
                     {
                         // If raycast hits something that is not PortalAble, placement is invalid
