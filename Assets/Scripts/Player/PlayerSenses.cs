@@ -20,7 +20,6 @@ namespace Player
             // Handle trigger enter logic
             if (other.CompareTag("WallDisabler"))
             {
-                Debug.Log("Wall Disabler");
                 playerCollider.excludeLayers |= LayerMask.GetMask("PortalAble");
                 characterController.excludeLayers |= LayerMask.GetMask("PortalAble");
             }
@@ -74,7 +73,6 @@ namespace Player
             // Handle trigger exit logic
             if (other.CompareTag("WallDisabler"))
             {
-                Debug.Log("Wall Enabler");
                 playerCollider.excludeLayers &= ~LayerMask.GetMask("PortalAble");
                 characterController.excludeLayers &= ~LayerMask.GetMask("PortalAble");
             }
