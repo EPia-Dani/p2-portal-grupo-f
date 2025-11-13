@@ -13,6 +13,9 @@ namespace Turret
         [SerializeField] private Color laserColor = Color.red;
         [SerializeField] private float laserIntensity = 2f;
 
+        [Header("Hit Detection")]
+        [SerializeField] private LayerMask reflectiveLayerMask; // e.g., "LaserReflective"
+
         [Header("Visual")]
         [SerializeField] private int laserSegments = 20;
 
@@ -38,6 +41,16 @@ namespace Turret
             );
 
             laserBeam.AddHit("Player").OnHit(_ => EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Death));
+
+            // Reflective cubes
+            laserBeam.AddHit(reflectiveLayerMask).OnHit(hit =>
+            {
+                if (hit.collider.TryGetComponent<ReflectiveCube>(out var reflectiveCube))
+                {
+                    Debug.Log($"Reflective cube hit: {hit.collider.name}");
+                    reflectiveCube.OnLaserHit(hit.point, laserBeam.CurrentDirection, hit.normal);
+                }
+            });
         }
 
         private void Update()

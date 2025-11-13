@@ -1,14 +1,15 @@
 using Core.EventBus;
 using Player;
+using PrimeTween;
 using UnityEngine;
 
 namespace GravityGun
 {
     public class GravityGun : MonoBehaviour
     {
-        
+
         public float shootForce = 10f;
-        
+
         [Header("Ground Collision")]
         public float groundClearance = 0.05f;
 
@@ -17,7 +18,7 @@ namespace GravityGun
         public float springDamping = 10f;
         public float maxSpeed = 30f;
         public float rotationSpeed = 10f;
-        
+
         [Header("Distance")]
         public float maxHoldDistance = 15f;
 
@@ -28,6 +29,7 @@ namespace GravityGun
         private float originalDrag;
         private float originalAngularDrag;
         private float holdDistance;
+        private Tween _dropTween;
 
         private void Awake()
         {
@@ -48,16 +50,20 @@ namespace GravityGun
 
         private void HandleInteract()
         {
-            if (heldObj.rb != null)
-                Drop();
+            if (heldObj.rb != null && !_dropTween.isAlive)
+            {
+                _dropTween = Tween.Delay(0.1f).OnComplete(this, target => Drop());
+            }
         }
 
         private void HandleDrag(DraggableEvent e)
         {
             if (heldObj.rb == null)
+            {
                 Pick(e);
+            }
         }
-        
+
         private void HandleShoot()
         {
             if (heldObj.rb != null)
@@ -88,7 +94,7 @@ namespace GravityGun
 
             heldObj.rb = null;
         }
-        
+
         private void Shoot()
         {
             if (heldObj.rb == null) return;

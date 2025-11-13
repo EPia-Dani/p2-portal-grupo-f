@@ -38,6 +38,10 @@ namespace Turret
                 return false;
             }
 
+            public bool HasMask => layerMask.HasValue;
+            public bool HasTag => !string.IsNullOrEmpty(tag);
+            public LayerMask? Mask => layerMask;
+
             public LaserHit OnHit(Action<RaycastHit> action)
             {
                 if (action != null)
@@ -58,7 +62,7 @@ namespace Turret
 
         private readonly MeshFilter meshFilter;
         private readonly MeshRenderer meshRenderer;
-        private readonly Transform origin;
+        private Transform origin;
 
         private readonly float range;
         private readonly float width;
@@ -68,8 +72,22 @@ namespace Turret
 
         private readonly List<LaserHit> hits = new List<LaserHit>();
 
+        // Reusable mesh data to avoid per-frame allocations
+        private Mesh _mesh;
+        private Vector3[] _vertices;
+        private Vector2[] _uvs;
+        private int[] _triangles;
+        private int _cachedSegments = -1;
+
+        private bool isActive = true;
+        private bool useManualStart;
+        private Vector3 manualStartPosition;
+        private Vector3 manualDirection = Vector3.forward;
+
         private float currentLength;
-        private Mesh currentMesh;
+        public Vector3 CurrentStart { get; private set; }
+        public Vector3 CurrentDirection { get; private set; }
+        public bool IsActive => isActive;
 
         public LaserBeam(
             MeshFilter meshFilter,
@@ -92,6 +110,7 @@ namespace Turret
             this.intensity = intensity;
 
             InitializeVisuals();
+            EnsureMeshInitialized();
         }
 
         private void InitializeVisuals()
@@ -100,6 +119,32 @@ namespace Turret
             meshRenderer.material.SetFloat("_Intensity", intensity);
             meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             meshRenderer.receiveShadows = false;
+        }
+
+        public void SetActive(bool active)
+        {
+            isActive = active;
+            if (meshRenderer != null)
+            {
+                meshRenderer.enabled = active;
+            }
+        }
+
+        public void SetStart(Transform newOrigin)
+        {
+            origin = newOrigin;
+            useManualStart = false;
+        }
+
+        public void SetStart(Vector3 position, Vector3 direction)
+        {
+            useManualStart = true;
+            manualStartPosition = position;
+            manualDirection = direction.sqrMagnitude > 0f ? direction.normalized : Vector3.forward;
+
+            // Align mesh transform immediately
+            var tf = meshFilter.transform;
+            tf.SetPositionAndRotation(manualStartPosition, Quaternion.LookRotation(manualDirection));
         }
 
         public LaserHit AddHit(LayerMask mask)
@@ -139,20 +184,42 @@ namespace Turret
 
         public void Tick()
         {
-            if (origin == null) return;
+            if (!isActive) return;
+            if (!useManualStart && origin == null) return;
 
             float newLength;
             RaycastHit hit;
             bool hasHit;
 
-            LayerMask? combinedMask = GetCombinedLayerMask();
-            if (combinedMask.HasValue)
+            // Determine start and direction
+            Vector3 startPos;
+            Vector3 dir;
+            if (useManualStart)
             {
-                hasHit = Physics.Raycast(origin.position, origin.forward, out hit, range, combinedMask.Value);
+                startPos = manualStartPosition;
+                dir = manualDirection;
             }
             else
             {
-                hasHit = Physics.Raycast(origin.position, origin.forward, out hit, range);
+                startPos = origin.position;
+                dir = origin.forward;
+            }
+
+            CurrentStart = startPos;
+            CurrentDirection = dir;
+
+            // Keep mesh object aligned with ray each frame
+            var tf = meshFilter.transform;
+            tf.SetPositionAndRotation(startPos, Quaternion.LookRotation(dir));
+
+            LayerMask? combinedMask = GetCombinedLayerMask();
+            if (combinedMask.HasValue)
+            {
+                hasHit = Physics.Raycast(startPos, dir, out hit, range, combinedMask.Value);
+            }
+            else
+            {
+                hasHit = Physics.Raycast(startPos, dir, out hit, range);
             }
 
             if (hasHit)
@@ -185,17 +252,19 @@ namespace Turret
         {
             int mask = 0;
             bool hasMask = false;
+            bool hasTag = false;
             for (int i = 0; i < hits.Count; i++)
             {
                 var h = hits[i];
-                // Use reflection-safe approach by asking Matches against layers only if mask is present
-                // We can't access h.layerMask directly here as it's private; rebuild masks via try-cast pattern:
-                // Instead, we track by trying a collider layer bit OR approach is not possible without field access.
-                // To keep things simple and robust, skip combining when we can't know; rely on unfiltered raycast.
-                // We'll keep hasMask=false to fall back to unfiltered when any tag-based hits exist.
-                // Optimization can be added later if needed.
+                if (h.HasTag) hasTag = true;
+                if (h.HasMask && h.Mask.HasValue)
+                {
+                    hasMask = true;
+                    mask |= h.Mask.Value.value;
+                }
             }
-            if (hasMask)
+            // If any tag-based condition exists, don't filter; otherwise use the combined mask
+            if (!hasTag && hasMask)
             {
                 return (LayerMask)mask;
             }
@@ -204,15 +273,19 @@ namespace Turret
 
         private void UpdateLaserMesh(float length)
         {
-            Mesh mesh = new Mesh();
-
-            int vertexCount = segments * 2 + 2;
-            Vector3[] vertices = new Vector3[vertexCount];
-            Vector2[] uvs = new Vector2[vertexCount];
-            int[] triangles = new int[segments * 6];
+            EnsureMeshInitialized();
 
             float angleStep = 360f / segments;
-            float radius = width / 2f;
+
+            var tf = meshFilter.transform;
+            var ls = tf.lossyScale;
+            float scaleXY = (Mathf.Abs(ls.x) + Mathf.Abs(ls.y)) * 0.5f;
+            if (scaleXY <= 0.0001f) scaleXY = 1f;
+            float radius = width / 2f / scaleXY;
+
+            float scaleZ = Mathf.Abs(ls.z);
+            if (scaleZ <= 0.0001f) scaleZ = 1f;
+            float localLength = length / scaleZ;
 
             for (int i = 0; i <= segments; i++)
             {
@@ -220,11 +293,30 @@ namespace Turret
                 float x = Mathf.Cos(angle) * radius;
                 float y = Mathf.Sin(angle) * radius;
 
-                vertices[i * 2] = new Vector3(x, y, 0);
-                uvs[i * 2] = new Vector2((float)i / segments, 0);
+                _vertices[i * 2] = new Vector3(x, y, 0);
+                _vertices[i * 2 + 1] = new Vector3(x, y, localLength);
+            }
 
-                vertices[i * 2 + 1] = new Vector3(x, y, length);
-                uvs[i * 2 + 1] = new Vector2((float)i / segments, 1);
+            _mesh.vertices = _vertices;
+            _mesh.RecalculateBounds();
+            _mesh.RecalculateNormals();
+        }
+
+        private void EnsureMeshInitialized()
+        {
+            if (_mesh != null && _cachedSegments == segments) return;
+
+            _cachedSegments = segments;
+
+            int vertexCount = segments * 2 + 2;
+            _vertices = new Vector3[vertexCount];
+            _uvs = new Vector2[vertexCount];
+            _triangles = new int[segments * 6];
+
+            for (int i = 0; i <= segments; i++)
+            {
+                _uvs[i * 2] = new Vector2((float)i / segments, 0);
+                _uvs[i * 2 + 1] = new Vector2((float)i / segments, 1);
             }
 
             int triIndex = 0;
@@ -233,31 +325,23 @@ namespace Turret
                 int current = i * 2;
                 int next = (i + 1) * 2;
 
-                triangles[triIndex++] = current;
-                triangles[triIndex++] = next;
-                triangles[triIndex++] = current + 1;
+                _triangles[triIndex++] = current;
+                _triangles[triIndex++] = next;
+                _triangles[triIndex++] = current + 1;
 
-                triangles[triIndex++] = current + 1;
-                triangles[triIndex++] = next;
-                triangles[triIndex++] = next + 1;
+                _triangles[triIndex++] = current + 1;
+                _triangles[triIndex++] = next;
+                _triangles[triIndex++] = next + 1;
             }
 
-            mesh.vertices = vertices;
-            mesh.uv = uvs;
-            mesh.triangles = triangles;
-            mesh.RecalculateNormals();
-            mesh.RecalculateBounds();
+            _mesh = new Mesh();
+            _mesh.MarkDynamic();
+            _mesh.vertices = _vertices;
+            _mesh.uv = _uvs;
+            _mesh.triangles = _triangles;
 
-            if (currentMesh != null && meshFilter.mesh == currentMesh)
-            {
-                UnityEngine.Object.Destroy(currentMesh);
-            }
-
-            meshFilter.mesh = mesh;
-            currentMesh = mesh;
+            meshFilter.mesh = _mesh;
         }
-
-        public float GetCurrentLength() => currentLength;
     }
 }
 
