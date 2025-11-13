@@ -20,6 +20,7 @@ namespace Turret
         [SerializeField] private int laserSegments = 20;
 
         private LaserBeam laserBeam;
+        private bool m_alive = true;
 
         private void Start()
         {
@@ -55,7 +56,17 @@ namespace Turret
 
         private void Update()
         {
-            laserBeam?.Tick();
+            if (m_alive)
+            {
+                m_alive = Vector3.Dot(transform.up, Vector3.up) > 0.85f;
+                laserBeam?.Tick();
+            }
+            else
+            {
+                Debug.Log("Turret destroyed, disabling laser.");
+                laserBeam.SetActive(false);
+            }
+            
         }
 
         private void OnDrawGizmosSelected()
