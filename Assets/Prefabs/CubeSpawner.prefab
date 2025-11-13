@@ -26,17 +26,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 1c4b5ed70fb87514ab32d585997c92df,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.3110237
+      value: 8.44
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1c4b5ed70fb87514ab32d585997c92df,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.0000019073486
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1c4b5ed70fb87514ab32d585997c92df,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6.7875957
+      value: 7.21
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1c4b5ed70fb87514ab32d585997c92df,
         type: 3}
@@ -163,5 +163,5 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0

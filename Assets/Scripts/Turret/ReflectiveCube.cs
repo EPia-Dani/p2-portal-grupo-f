@@ -72,31 +72,11 @@ namespace Turret
 
         public void OnLaserHit(Vector3 hitPoint, Vector3 incomingDirection, Vector3 surfaceNormal)
         {
-            var localNormal = transform.InverseTransformDirection(surfaceNormal).normalized;
-            var abs = new Vector3(Mathf.Abs(localNormal.x), Mathf.Abs(localNormal.y), Mathf.Abs(localNormal.z));
+            var reflectDir = transform.forward;
 
-            Vector3 localRightDir;
-            if (abs.z >= abs.x && abs.z >= abs.y)
-            {
-                localRightDir = Mathf.Sign(localNormal.z) > 0 ? Vector3.right : Vector3.left;
-            }
-            else if (abs.x >= abs.y && abs.x >= abs.z)
-            {
-                localRightDir = Mathf.Sign(localNormal.x) > 0 ? Vector3.back : Vector3.forward;
-            }
-            else
-            {
-                localRightDir = Vector3.right;
-            }
-
-            var reflectDir = transform.TransformDirection(localRightDir).normalized;
-            var transformPos = transform.position;
-            var startPos = new Vector3(transformPos.x, hitPoint.y, transformPos.z) + surfaceNormal.normalized * surfaceEpsilon;
-
-            reflectedBeam.SetStart(startPos, reflectDir);
+            reflectedBeam.SetStart(transform.position, reflectDir);
             reflectedBeam.SetActive(true);
             _sawHitThisFrame = true;
         }
     }
 }
-
