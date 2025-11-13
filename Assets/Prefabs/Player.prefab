@@ -525,6 +525,7 @@ GameObject:
   - component: {fileID: 1374872660566481918}
   - component: {fileID: 4948006915978640251}
   - component: {fileID: 8303105082516963283}
+  - component: {fileID: 6694407704378801092}
   m_Layer: 0
   m_Name: Logic
   m_TagString: Untagged
@@ -576,7 +577,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   recoilTime: 0.2
-  shotSpread: 0.01
   portalBlue: {fileID: 0}
   portalOrange: {fileID: 0}
   _sensitivity: 0.0345
@@ -621,12 +621,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615dd05ccf628d84183d85ecceb8fa61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickRange: 5
+  shootForce: 10
   groundClearance: 0.05
   springStrength: 100
   springDamping: 10
   maxSpeed: 30
   rotationSpeed: 10
+  maxHoldDistance: 15
 --- !u!114 &8303105082516963283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -639,6 +640,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 099fa72d2187434e96a06d81510b0d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6694407704378801092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7075149492844615429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1007dcebb6c1a91448e3e3f30953f2b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  force: 1
+  raycastDistance: 1.1
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1 &9068138246549944969
 GameObject:
   m_ObjectHideFlags: 0
