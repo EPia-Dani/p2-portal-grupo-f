@@ -132,6 +132,8 @@ namespace Player
         private Vector3 _recoilRotationOffset;
         private Vector3 _recoilPositionVelocity;
         private Vector3 _recoilRotationVelocity;
+        
+        private Vector3 _baseRespawnPosition;
 
         private void Awake()
         {
