@@ -32,10 +32,10 @@ namespace Player
                 var portal = other.transform.parent;
             
                 // Create a plane oriented towards the portal's forward vector
-                Plane portalPlane = new Plane(portal.forward, portal.position);
+                Plane portalPlane = new Plane(portal.forward, portal.position+ portal.forward * 0.03f);
                 float distanceToPlane = portalPlane.GetDistanceToPoint(transform.position);
             
-                if (distanceToPlane < 0.05f)
+                if (distanceToPlane < 0.13f)
                 {
                     // Handle portal traversal
                     var destinationPortal = portal.GetComponent<Portal>().linkedPortal;
@@ -52,7 +52,7 @@ namespace Player
                         Vector3 rotatedOffset = rotationDifference * offset;
                         
                         // Set the new position
-                        transform.position = destinationPortal.transform.position + rotatedOffset + destinationPortal.transform.forward * 0.01f;
+                        transform.position = destinationPortal.transform.position + rotatedOffset + destinationPortal.transform.forward * 0.15f;
                         
                         Quaternion newRotation = rotationDifference * transform.rotation;
                         
@@ -60,7 +60,8 @@ namespace Player
                         EventBus<SetYawAndPitchEvent>.Invoke(new SetYawAndPitchEvent
                         {
                             yaw = newRotation.eulerAngles.y,
-                            pitch = newRotation.eulerAngles.x
+                            pitch = newRotation.eulerAngles.x,
+                            rotationDelta = rotationDifference
                         });
                         // transform.rotation = rotationDifference * transform.rotation;
                     }

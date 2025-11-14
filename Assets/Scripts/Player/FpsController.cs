@@ -270,6 +270,8 @@ namespace Player
 
             _pitchController.SetPitch(_pitch, _invertPitch);
             _player.transform.rotation = Quaternion.Euler(0, _yaw, 0);
+            
+            _currentWorldVelocity = e.rotationDelta * _currentWorldVelocity;
         }
 
         private void CalculateMovement()
@@ -589,3 +591,4 @@ namespace Player
         Orange
     }
 }
+

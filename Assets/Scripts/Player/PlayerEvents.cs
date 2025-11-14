@@ -87,6 +87,7 @@ namespace Player
     {
         public float yaw;
         public float pitch;
+        public Quaternion rotationDelta;
     }
 
     public enum PlayerEventsEnum
