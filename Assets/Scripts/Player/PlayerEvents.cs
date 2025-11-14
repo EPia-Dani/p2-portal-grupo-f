@@ -91,6 +91,11 @@ namespace Player
         public float pitch;
         public Quaternion rotationDelta;
     }
+    
+    public struct RespawnSetEvent : IEvent
+    {
+        public Vector3 position;
+    }
 
     public enum PlayerEventsEnum
     {

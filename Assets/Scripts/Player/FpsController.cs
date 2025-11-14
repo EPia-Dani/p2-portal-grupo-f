@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Linq;
 using Hittables;
 using Routines;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 // ReSharper disable InconsistentNaming
@@ -132,11 +133,16 @@ namespace Player
         private Vector3 _recoilRotationOffset;
         private Vector3 _recoilPositionVelocity;
         private Vector3 _recoilRotationVelocity;
-        
+
+        [Header("Death")]
+
+        [SerializeField] private Image deathFilter;
+        [SerializeField] private AudioClip deathClip;
         public Vector3 baseRespawnPosition;
 
         private void Awake()
         {
+            
             _player = transform.root.gameObject;
 
             if (!_player.TryGetComponentRecursive(out _pitchController))
@@ -184,11 +190,14 @@ namespace Player
             EventBus<SetYawAndPitchEvent>.Subscribe(SetYawAndPitch);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.ScrollUp, OnScrollUp);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.ScrollDown, OnScrollDown);
+            EventBus<RespawnSetEvent>.Subscribe(SetSpawn);
             
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
             
-            baseRespawnPosition = new Vector3(0, 1, 0);
+            baseRespawnPosition = new Vector3(0, 2, 0);
+            
+            deathFilter.enabled = false;
         }
 
         private void OnPlayerDeath()
@@ -197,6 +206,8 @@ namespace Player
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             _shootRoutine.Stop();
+            deathFilter.enabled = true;
+            audioSource.PlayOneShot(deathClip);
 
             Routine.Create(Respawn()).Run();
 
@@ -204,6 +215,11 @@ namespace Player
             {
                 footstepsAudioSource.Stop();
             }
+        }
+
+        private void SetSpawn(RespawnSetEvent e)
+        {
+            baseRespawnPosition = e.position;
         }
 
         private IEnumerator Respawn()
@@ -218,6 +234,7 @@ namespace Player
             _isDead = false;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            deathFilter.enabled = false;
         }
 
         private void OnJump(JumpEvent e)
@@ -588,6 +605,7 @@ namespace Player
             EventBus<SetYawAndPitchEvent>.Unsubscribe(SetYawAndPitch);
             EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.ScrollUp, OnScrollUp);
             EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.ScrollDown, OnScrollDown);
+            EventBus<RespawnSetEvent>.Unsubscribe(SetSpawn);
         }
     }
     
