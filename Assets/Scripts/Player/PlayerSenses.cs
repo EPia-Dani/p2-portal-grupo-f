@@ -20,8 +20,12 @@ namespace Player
             // Handle trigger enter logic
             if (other.CompareTag("WallDisabler"))
             {
+                /*
                 playerCollider.excludeLayers |= LayerMask.GetMask("PortalAble");
                 characterController.excludeLayers |= LayerMask.GetMask("PortalAble");
+                */
+                Physics.IgnoreCollision(other.transform.parent.GetComponent<Portal>().attachedSurface.GetComponent<Collider>(), playerCollider, true);
+                Physics.IgnoreCollision(other.transform.parent.GetComponent<Portal>().attachedSurface.GetComponent<Collider>(), characterController, true);
             }
         }
         
@@ -74,8 +78,12 @@ namespace Player
             // Handle trigger exit logic
             if (other.CompareTag("WallDisabler"))
             {
+                /*
                 playerCollider.excludeLayers &= ~LayerMask.GetMask("PortalAble");
                 characterController.excludeLayers &= ~LayerMask.GetMask("PortalAble");
+                */
+                Physics.IgnoreCollision(other.transform.parent.GetComponent<Portal>().attachedSurface.GetComponent<Collider>(), playerCollider, false);
+                Physics.IgnoreCollision(other.transform.parent.GetComponent<Portal>().attachedSurface.GetComponent<Collider>(), characterController, false);
             }
         }
     }
