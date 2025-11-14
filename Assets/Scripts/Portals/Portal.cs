@@ -35,6 +35,7 @@ namespace Portals
         
         public MeshRenderer Renderer => portalRenderer;
 
+        public GameObject attachedSurface { get; private set; }
         public Transform portalCheckerParent;
         private List<Transform> portalCheckers = new List<Transform>();
 
@@ -51,6 +52,12 @@ namespace Portals
             
             // Set camera reference
             mainCamera = Camera.main;
+            
+            // Set attachedSurface with a Raycast
+            if (Physics.Raycast(transform.position + transform.forward * 0.1f, -transform.forward, out var hit, 1f))
+            {
+                attachedSurface = hit.collider.gameObject;
+            }
         }
 
         private void OnEnable()
@@ -81,15 +88,15 @@ namespace Portals
 
         private void OnPortalEventBlue(PortalEventBlue eventData)
         {
-            SetPortalTransform(eventData.destPosition, eventData.destRotation, eventData.destScale);
+            SetPortalTransform(eventData.destPosition, eventData.destRotation, eventData.destScale, eventData.destObject);
         }
 
         private void OnPortalEventOrange(PortalEventOrange eventData)
         {
-            SetPortalTransform(eventData.destPosition, eventData.destRotation, eventData.destScale);
+            SetPortalTransform(eventData.destPosition, eventData.destRotation, eventData.destScale, eventData.destObject);
         }
 
-        private void SetPortalTransform(Vector3 position, Quaternion rotation, Vector3 scale)
+        private void SetPortalTransform(Vector3 position, Quaternion rotation, Vector3 scale, GameObject colliderGameObject)
         {
             // Set portal scale
             transform.localScale = scale;
@@ -97,8 +104,6 @@ namespace Portals
             // Move portal checkers to the desired position and rotation
             portalCheckerParent.position = position;
             portalCheckerParent.rotation = rotation;
-
-            Vector3 controlNormal = Vector3.zero;
             
             // Check for valid placement using portal checkers
             foreach (var checker in portalCheckers)
@@ -109,20 +114,9 @@ namespace Portals
                 // Raycast from camera position towards checker position
                 if (Physics.Raycast(mainCamera.transform.position, directionToChecker.normalized, out var hit, distanceToChecker))
                 {
-                    if (controlNormal == Vector3.zero)
+                    if (colliderGameObject != hit.collider.gameObject && hit.collider.transform.parent != transform)
                     {
-                        controlNormal = hit.normal;
-                    } else if (controlNormal != hit.normal)
-                    {
-                        // If normals differs, placement is invalid
-                        portalCheckerParent.position = transform.position;
-                        portalCheckerParent.rotation = transform.rotation;
-                        return;
-                    }
-                    
-                    if (hit.collider.gameObject.layer != LayerMask.NameToLayer("PortalAble") && hit.collider.transform.parent != transform)
-                    {
-                        // If raycast hits something that is not PortalAble, placement is invalid
+                        // If surface differs, placement is invalid
                         portalCheckerParent.position = transform.position;
                         portalCheckerParent.rotation = transform.rotation;
                         return;
@@ -138,6 +132,7 @@ namespace Portals
             transform.position = position;
             transform.rotation = rotation;
             IsPlaced = true;
+            attachedSurface = colliderGameObject;
             
             // Return portal checkers to original position
             portalCheckerParent.position = transform.position;

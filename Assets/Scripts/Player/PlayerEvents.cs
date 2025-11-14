@@ -74,6 +74,7 @@ namespace Player
         public Vector3 destPosition;
         public Quaternion destRotation;
         public Vector3 destScale;
+        public GameObject destObject;
     }
     
     public struct PortalEventOrange : IEvent
@@ -81,6 +82,7 @@ namespace Player
         public Vector3 destPosition;
         public Quaternion destRotation;
         public Vector3 destScale;
+        public GameObject destObject;
     }
     
     public struct SetYawAndPitchEvent : IEvent

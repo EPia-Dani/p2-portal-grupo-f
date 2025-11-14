@@ -520,7 +520,8 @@ namespace Player
                         {
                             destPosition = destPosition,
                             destRotation = destRotation,
-                            destScale = Vector3.one * portalSize
+                            destScale = Vector3.one * portalSize,
+                            destObject = hit.collider.gameObject
                         });
                         break;
                     case PortalColor.Orange:
@@ -528,7 +529,8 @@ namespace Player
                         {
                             destPosition = destPosition,
                             destRotation = destRotation,
-                            destScale = Vector3.one
+                            destScale = Vector3.one,
+                            destObject = hit.collider.gameObject
                         });
                         break;
                 }
