@@ -286,7 +286,7 @@ namespace Player
         private void SetYawAndPitch(SetYawAndPitchEvent e)
         {
             _yaw = e.yaw;
-            _pitch = e.pitch;
+            _pitch += e.pitch;
             _pitch = Mathf.Clamp(_pitch, -89f, 89f);
 
             _pitchController.SetPitch(_pitch, _invertPitch);
