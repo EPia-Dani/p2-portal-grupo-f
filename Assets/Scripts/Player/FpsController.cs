@@ -45,8 +45,6 @@ namespace Player
         [SerializeField] private float shotStartupTime = 0.05f;
         [SerializeField] private LayerMask portalAbleLayer;
         [SerializeField] private float recoilTime = 0.2f;
-        [SerializeField] private GameObject portalBlue;
-        [SerializeField] private GameObject portalOrange;
         private int bulletCount;
 
         [Header("Camera Look")] [SerializeField, Range(0f, 1f)]

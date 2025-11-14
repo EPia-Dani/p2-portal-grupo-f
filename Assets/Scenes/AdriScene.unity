@@ -659,24 +659,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 529488e2e4674db45b0da7a713cfcd31, type: 3}
---- !u!1 &808942151 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5853321447174575145, guid: d6a95f7b351c47e40a937d873933fbd8,
-    type: 3}
-  m_PrefabInstance: {fileID: 1486587115}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &808942157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 808942151}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0b5733a15c643ffbb63e92ba312009c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &820153852 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5490966043607722246, guid: 529488e2e4674db45b0da7a713cfcd31,
@@ -870,21 +852,6 @@ PrefabInstance:
       propertyPath: portalOrange
       value: 
       objectReference: {fileID: 1915832867}
-    - target: {fileID: 1374872660566481918, guid: d6a95f7b351c47e40a937d873933fbd8,
-        type: 3}
-      propertyPath: portalAbleLayer.m_Bits
-      value: 64
-      objectReference: {fileID: 0}
-    - target: {fileID: 1932445393333751791, guid: d6a95f7b351c47e40a937d873933fbd8,
-        type: 3}
-      propertyPath: near clip plane
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4948006915978640251, guid: d6a95f7b351c47e40a937d873933fbd8,
-        type: 3}
-      propertyPath: maxHoldDistance
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 5853321447174575145, guid: d6a95f7b351c47e40a937d873933fbd8,
         type: 3}
       propertyPath: m_Name
@@ -943,11 +910,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5853321447174575145, guid: d6a95f7b351c47e40a937d873933fbd8,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 808942157}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6a95f7b351c47e40a937d873933fbd8, type: 3}
 --- !u!1 &1570313948
 GameObject:
