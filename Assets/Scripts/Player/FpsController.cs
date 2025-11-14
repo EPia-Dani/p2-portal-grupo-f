@@ -46,6 +46,7 @@ namespace Player
         [SerializeField] private LayerMask portalAbleLayer;
         [SerializeField] private float recoilTime = 0.2f;
         private int bulletCount;
+        private float portalSize = 1f;
 
         [Header("Camera Look")] [SerializeField, Range(0f, 1f)]
         private float _sensitivity = 1f;
@@ -179,6 +180,8 @@ namespace Player
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Death, OnPlayerDeath);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Respawn, OnPlayerRespawn);
             EventBus<SetYawAndPitchEvent>.Subscribe(SetYawAndPitch);
+            EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.ScrollUp, OnScrollUp);
+            EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.ScrollDown, OnScrollDown);
             
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -510,14 +513,16 @@ namespace Player
                         EventBus<PortalEventBlue>.Invoke(new PortalEventBlue
                         {
                             destPosition = destPosition,
-                            destRotation = destRotation
+                            destRotation = destRotation,
+                            destScale = Vector3.one * portalSize
                         });
                         break;
                     case PortalColor.Orange:
                         EventBus<PortalEventOrange>.Invoke(new PortalEventOrange
                         {
                             destPosition = destPosition,
-                            destRotation = destRotation
+                            destRotation = destRotation,
+                            destScale = Vector3.one
                         });
                         break;
                 }
@@ -526,6 +531,40 @@ namespace Player
             yield return new WaitForSeconds(recoilTime);
         
             _canShoot = true;
+        }
+        
+        private void OnScrollUp()
+        {
+            if (_isDead) return;
+            
+            switch (portalSize) 
+            {
+                case 0.5f:
+                    portalSize = 1f;
+                    break;
+                case 1f:
+                    portalSize = 2f;
+                    break;
+                case 2f:
+                    break;
+            }
+        }
+        
+        private void OnScrollDown()
+        {
+            if (_isDead) return;
+            
+            switch (portalSize) 
+            {
+                case 0.5f:
+                    break;
+                case 1f:
+                    portalSize = 0.5f;
+                    break;
+                case 2f:
+                    portalSize = 1f;
+                    break;
+            }
         }
 
         private void OnDestroy()
@@ -537,6 +576,10 @@ namespace Player
             EventBus<LookEvent>.Unsubscribe(_onLook);
             EventBus<ShootBlueEvent>.Unsubscribe(TryShootBluePortal);
             EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Death, OnPlayerDeath);
+            EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Respawn, OnPlayerRespawn);
+            EventBus<SetYawAndPitchEvent>.Unsubscribe(SetYawAndPitch);
+            EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.ScrollUp, OnScrollUp);
+            EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.ScrollDown, OnScrollDown);
         }
     }
     

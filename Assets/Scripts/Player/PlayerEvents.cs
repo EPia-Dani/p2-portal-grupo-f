@@ -73,12 +73,14 @@ namespace Player
     {
         public Vector3 destPosition;
         public Quaternion destRotation;
+        public Vector3 destScale;
     }
     
     public struct PortalEventOrange : IEvent
     {
         public Vector3 destPosition;
         public Quaternion destRotation;
+        public Vector3 destScale;
     }
     
     public struct SetYawAndPitchEvent : IEvent
@@ -94,6 +96,8 @@ namespace Player
         Death,
         Respawn,
         Gun,
-        Shoot
+        Shoot,
+        ScrollUp,
+        ScrollDown
     }
 }

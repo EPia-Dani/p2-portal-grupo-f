@@ -81,16 +81,19 @@ namespace Portals
 
         private void OnPortalEventBlue(PortalEventBlue eventData)
         {
-            SetPortalTransform(eventData.destPosition, eventData.destRotation);
+            SetPortalTransform(eventData.destPosition, eventData.destRotation, eventData.destScale);
         }
 
         private void OnPortalEventOrange(PortalEventOrange eventData)
         {
-            SetPortalTransform(eventData.destPosition, eventData.destRotation);
+            SetPortalTransform(eventData.destPosition, eventData.destRotation, eventData.destScale);
         }
 
-        private void SetPortalTransform(Vector3 position, Quaternion rotation)
+        private void SetPortalTransform(Vector3 position, Quaternion rotation, Vector3 scale)
         {
+            // Set portal scale
+            transform.localScale = scale;
+            
             // Move portal checkers to the desired position and rotation
             portalCheckerParent.position = position;
             portalCheckerParent.rotation = rotation;

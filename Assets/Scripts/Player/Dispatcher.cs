@@ -51,12 +51,25 @@ namespace Player
         private void OnInteract(InputValue value)
         {
             EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Interact);
-
         }
         
         private void OnShoot(InputValue value)
         {
             EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Shoot);
+        }
+        
+        private void OnScroll(InputValue value)
+        {
+            var delta = value.Get<Vector2>().y;
+            
+            if (delta > 0)
+            {
+                EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.ScrollUp);
+            }
+            else if (delta < 0)
+            {
+                EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.ScrollDown);
+            }
         }
         
     }

@@ -56,6 +56,10 @@ public class PortalTraversable : MonoBehaviour
                         Vector3 newVelocity = rotationDifference * rb.linearVelocity;
                         rb.linearVelocity = newVelocity;
                     }
+                    
+                    // Adjust object scale
+                    float scaleRatio = destinationPortal.transform.localScale.x / portal.transform.localScale.x;
+                    transform.localScale *= scaleRatio;
                 }
             }
         }
