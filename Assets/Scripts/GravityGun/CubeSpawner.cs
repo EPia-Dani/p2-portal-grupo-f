@@ -40,5 +40,13 @@ namespace GravityGun
         {
             SpawnCube();
         }
+        
+        public void ReceiveSignal(bool signal)
+        {
+            if (signal)
+            {
+                SpawnCube();
+            }
+        }
     }
 }
