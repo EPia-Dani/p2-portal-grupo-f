@@ -85,7 +85,6 @@ namespace Player
         [SerializeField] private Vector3 _recoilPositionKickback = new Vector3(0f, 0f, -0.1f);
         [SerializeField] private Vector3 _recoilRotationKickback = new Vector3(-5f, 0f, 0f);
         [SerializeField] private float _recoilVerticalRotation = 3f;
-        [SerializeField] private float _recoilSnapTime = 0.05f;
         [SerializeField] private float _recoilReturnTime = 0.2f;
 
         private float _yaw;

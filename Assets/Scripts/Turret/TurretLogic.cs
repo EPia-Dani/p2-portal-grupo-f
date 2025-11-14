@@ -14,7 +14,8 @@ namespace Turret
         [SerializeField] private float laserIntensity = 2f;
 
         [Header("Hit Detection")]
-        [SerializeField] private LayerMask reflectiveLayerMask; // e.g., "LaserReflective"
+        private LayerMask reflectiveLayerMask;
+        private LayerMask laserButtonLayerMask;
 
         [Header("Visual")]
         [SerializeField] private int laserSegments = 20;
@@ -24,6 +25,9 @@ namespace Turret
 
         private void Start()
         {
+            reflectiveLayerMask = LayerMask.GetMask("LaserReflective");
+            laserButtonLayerMask = LayerMask.GetMask("LaserButton");
+
             var laserObject = gameObject.GetChildRecursive("LaserBeam");
             var laserOriginObject = gameObject.GetChildRecursive("LaserOrigin");
             var laserOrigin = laserOriginObject.transform;
@@ -48,9 +52,19 @@ namespace Turret
             {
                 if (hit.collider.TryGetComponent<ReflectiveCube>(out var reflectiveCube))
                 {
-                    Debug.Log($"Reflective cube hit: {hit.collider.name}");
                     reflectiveCube.OnLaserHit(hit.point, laserBeam.CurrentDirection, hit.normal);
                 }
+            });
+
+            // Laser buttons
+            laserBeam.AddHit(laserButtonLayerMask).OnHit(hit =>
+            {
+                // TODO: Implement LaserButton class or whatever name you want to give it
+                // if (hit.collider.TryGetComponent<LaserButton>(out var laserButton))
+                // {
+                //     TODO: Implement OnLaserHit method to activate the door or whatever
+                //     laserButton.OnLaserHit();
+                // }
             });
         }
 
@@ -66,7 +80,7 @@ namespace Turret
                 Debug.Log("Turret destroyed, disabling laser.");
                 laserBeam.SetActive(false);
             }
-            
+
         }
 
         private void OnDrawGizmosSelected()
