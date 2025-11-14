@@ -133,7 +133,7 @@ namespace Player
         private Vector3 _recoilPositionVelocity;
         private Vector3 _recoilRotationVelocity;
         
-        private Vector3 _baseRespawnPosition;
+        public Vector3 baseRespawnPosition;
 
         private void Awake()
         {
@@ -187,6 +187,8 @@ namespace Player
             
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            
+            baseRespawnPosition = new Vector3(0, 1, 0);
         }
 
         private void OnPlayerDeath()
@@ -206,9 +208,9 @@ namespace Player
 
         private IEnumerator Respawn()
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1f); 
             OnPlayerRespawn();
-            _player.transform.position = new Vector3(0, 1, 0);
+            _player.transform.position = baseRespawnPosition;
         }
 
         public void OnPlayerRespawn()
