@@ -4,8 +4,7 @@ namespace Interactables
 {
     public class Door : MonoBehaviour
     {
-        private static readonly int OpenDoor = Animator.StringToHash("OpenDoor");
-        private static readonly int CloseDoor = Animator.StringToHash("CloseDoor");
+        private static readonly int Open = Animator.StringToHash("Open");
         [SerializeField] private Animator animator;
 
         private void Awake()
@@ -18,7 +17,7 @@ namespace Interactables
 
         public void Toggle(bool isOpen)
         {
-            animator.SetTrigger(isOpen ? OpenDoor : CloseDoor);
+            animator.SetBool(Open, isOpen);
         }
     }
 }

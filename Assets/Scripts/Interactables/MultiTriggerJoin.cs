@@ -18,6 +18,7 @@ namespace Interactables
                 activeTriggers++;
                 if (activeTriggers >= requiredTriggers)
                 {
+                    Debug.Log("All required triggers are active.");
                     OnAllTriggersActive.Invoke(true);
                 }
             }
@@ -26,6 +27,7 @@ namespace Interactables
                 activeTriggers--;
                 if (activeTriggers < requiredTriggers)
                 {
+                    Debug.Log("Not all required triggers are active.");
                     OnAllTriggersActive.Invoke(false);
                 }
             }
