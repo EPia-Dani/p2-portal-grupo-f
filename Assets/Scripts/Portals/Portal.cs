@@ -99,6 +99,7 @@ namespace Portals
         private void SetPortalTransform(Vector3 position, Quaternion rotation, Vector3 scale, GameObject colliderGameObject)
         {
             // Set portal scale
+            var originalScale = transform.localScale;
             transform.localScale = scale;
             
             // Move portal checkers to the desired position and rotation
@@ -114,17 +115,23 @@ namespace Portals
                 // Raycast from camera position towards checker position
                 if (Physics.Raycast(mainCamera.transform.position, directionToChecker.normalized, out var hit, distanceToChecker))
                 {
-                    if (colliderGameObject != hit.collider.gameObject && hit.collider.transform.parent != transform)
+                    if (colliderGameObject != hit.collider.gameObject)
                     {
-                        // If surface differs, placement is invalid
-                        portalCheckerParent.position = transform.position;
-                        portalCheckerParent.rotation = transform.rotation;
-                        return;
+                        // If surface differs, placement is invalid unless said surface is the portal itself and there's valid placement behind it
+                        if (hit.collider.transform.parent != transform || !Physics.Raycast(checker.position,
+                                -checker.forward, .5f, LayerMask.GetMask("PortalAble")))
+                        {
+                            portalCheckerParent.position = transform.position;
+                            portalCheckerParent.rotation = transform.rotation;
+                            transform.localScale = originalScale;
+                            return;
+                        }
                     }
                 } else { 
                     // If raycast does not hit anything, placement is invalid
                     portalCheckerParent.position = transform.position;
                     portalCheckerParent.rotation = transform.rotation;
+                    transform.localScale = originalScale;
                     return;
                 }
             }

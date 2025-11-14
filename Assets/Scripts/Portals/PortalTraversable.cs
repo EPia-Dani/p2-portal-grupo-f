@@ -17,7 +17,7 @@ public class PortalTraversable : MonoBehaviour
         // Handle trigger enter logic
         if (other.CompareTag("WallDisabler"))
         {
-            collider.excludeLayers |= LayerMask.GetMask("PortalAble");
+            Physics.IgnoreCollision(other.transform.parent.GetComponent<Portal>().attachedSurface.GetComponent<Collider>(), collider, true);
         }
     }
     
@@ -70,7 +70,7 @@ public class PortalTraversable : MonoBehaviour
         // Handle trigger exit logic
         if (other.CompareTag("WallDisabler"))
         {
-            collider.excludeLayers &= ~LayerMask.GetMask("PortalAble");
+            Physics.IgnoreCollision(other.transform.parent.GetComponent<Portal>().attachedSurface.GetComponent<Collider>(), collider, false);
         }
     }
 }

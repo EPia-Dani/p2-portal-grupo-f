@@ -160,15 +160,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400008, guid: e974cdd27b308e14fadbc5fef531fbbc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.2439852
+      value: 8.506
       objectReference: {fileID: 0}
     - target: {fileID: 400008, guid: e974cdd27b308e14fadbc5fef531fbbc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.71
+      value: 0.581
       objectReference: {fileID: 0}
     - target: {fileID: 400008, guid: e974cdd27b308e14fadbc5fef531fbbc, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.86
+      value: -1.416
       objectReference: {fileID: 0}
     - target: {fileID: 400008, guid: e974cdd27b308e14fadbc5fef531fbbc, type: 3}
       propertyPath: m_LocalRotation.w
@@ -210,6 +210,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 35.6
       objectReference: {fileID: 0}
+    - target: {fileID: 2300004, guid: e974cdd27b308e14fadbc5fef531fbbc, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3c205bb0891977146aeb14e27af3284b, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -321,9 +325,6 @@ MonoBehaviour:
   laserWidth: 0.1
   laserColor: {r: 1, g: 0, b: 0, a: 1}
   laserIntensity: 2
-  reflectiveLayerMask:
-    serializedVersion: 2
-    m_Bits: 512
   laserSegments: 20
 --- !u!114 &6315760139783613436
 MonoBehaviour:
