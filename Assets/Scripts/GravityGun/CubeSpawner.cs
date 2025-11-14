@@ -38,7 +38,7 @@ namespace GravityGun
 
         public void Interact()
         {
-            SpawnCube();
+            //SpawnCube();
         }
         
         public void ReceiveSignal(bool signal)
