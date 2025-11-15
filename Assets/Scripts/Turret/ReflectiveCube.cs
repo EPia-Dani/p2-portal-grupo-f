@@ -1,4 +1,5 @@
 using Core.EventBus;
+using Interactables;
 using Player;
 using UnityEngine;
 
@@ -53,12 +54,10 @@ namespace Turret
             // Laser buttons
             reflectedBeam.AddHit(laserButtonLayerMask).OnHit(hit =>
             {
-                // TODO: Implement LaserButton class or whatever name you want to give it
-                // if (hit.collider.TryGetComponent<LaserButton>(out var laserButton))
-                // {
-                //     TODO: Implement OnLaserHit method to activate the door or whatever
-                //     laserButton.OnLaserHit();
-                // }
+                if (hit.collider.TryGetComponent<LaserButton>(out var laserButton))
+                {
+                    laserButton.OnLaserHit();
+                }
             });
 
             reflectedBeam.SetActive(false);
