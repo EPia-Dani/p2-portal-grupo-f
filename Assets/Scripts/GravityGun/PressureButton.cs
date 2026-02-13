@@ -28,12 +28,12 @@ namespace GravityGun
             if (proj > limit)
             {
                 pressed = true;
-                
+                Debug.Log("Pressed");
             }
             else
             {
                 pressed = false;
-                
+                Debug.Log("Not pressed");
             }
         }
     }

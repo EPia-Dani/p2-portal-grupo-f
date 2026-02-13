@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 
 namespace Player
 {
-    public class FpsController : MonoBehaviour
+    public class PlayerController : MonoBehaviour
     {
         private readonly struct MovementFrameState
         {
@@ -26,70 +26,76 @@ namespace Player
             }
         }
 
-        [Header("Movement")] [SerializeField] private float _speed = 10f;
-        [SerializeField] private float _bufferJumpTime = 0.2f;
-        [SerializeField] private float _coyoteTime = 0.2f;
-        [SerializeField] private float _runSpeedMultiplier = 1.5f;
+        [Header("Movement")][SerializeField] private float _speed = 8;
+        [SerializeField] private float _bufferJumpTime = 0.15f;
+        [SerializeField] private float _coyoteTime = 0.1f;
+        [SerializeField] private float _runSpeedMultiplier = 1.75f;
         [SerializeField] private float _accelTime = 0.08f;
-        [SerializeField] private float _accelTimeOnAir = 0.08f;
-        [SerializeField] private float _decelTime = 0.12f;
-        [SerializeField] private float _decelTimeOnAir = 0.12f;
+        [SerializeField] private float _accelTimeOnAir = 0.3f;
+        [SerializeField] private float _decelTime = 0.08f;
+        [SerializeField] private float _decelTimeOnAir = 0.3f;
 
-        [Header("Jump & Gravity")] [SerializeField]
-        private float _gravity = -9.81f;
+        [Header("Jump & Gravity")]
+        [SerializeField]
+        private float _gravity = -35f;
 
-        [SerializeField] private float _jumpHeight = 1.5f;
+        [SerializeField] private float _jumpHeight = 2.5f;
         [SerializeField] private float _groundedGravity = -2f;
 
-        [Header("Shooting")] 
+        [Header("Shooting")]
         [SerializeField] private float shotStartupTime = 0.05f;
         [SerializeField] private LayerMask portalAbleLayer;
         [SerializeField] private float recoilTime = 0.2f;
+        [SerializeField] private GameObject portalBlue;
+        [SerializeField] private GameObject portalOrange;
+        private int bulletCount;
 
-        [Header("Camera Look")] [SerializeField, Range(0f, 1f)]
-        private float _sensitivity = 1f;
+        [Header("Camera Look")]
+        [SerializeField, Range(0f, 1f)]
+        private float _sensitivity = 0.0345f;
 
         [SerializeField] private bool _invertPitch = false;
-        [SerializeField] private float _runFov = 90f;
-        [SerializeField] private float _smoothFovTime = 0.1f;
+        [SerializeField] private float _runFov = 70f;
+        [SerializeField] private float _smoothFovTime = 0.12f;
 
-        [Header("Bob")] [SerializeField] private float _bobYAmount = 0.5f;
-        [SerializeField] private float _bobXAmount = 0.1f;
+        [Header("Bob")][SerializeField] private float _bobYAmount = 0.1f;
+        [SerializeField] private float _bobXAmount = 0.025f;
         [SerializeField] private float _bobSmoothTime = 0.1f;
-        [SerializeField] private float _bobYFrequency = 10f;
-        [SerializeField] private float _bobXFrequency = 15f;
+        [SerializeField] private float _bobYFrequency = 12f;
+        [SerializeField] private float _bobXFrequency = 5f;
 
-        [Header("Tuning")] [SerializeField] private float _sprintSpeedThresholdFactor = 0.5f;
+        [Header("Tuning")][SerializeField] private float _sprintSpeedThresholdFactor = 0.5f;
         [SerializeField] private float _movingSpeedThresholdFactor = 0.5f;
         [SerializeField] private float _sprintBobSpeedMultiplier = 1.25f;
 
-        [Header("Leaning")] [SerializeField] private float _maxLeanRollDegrees = 10f;
-        [SerializeField] private float _maxLeanPitchDegrees = 5f;
+        [Header("Leaning")][SerializeField] private float _maxLeanRollDegrees = 5f;
+        [SerializeField] private float _maxLeanPitchDegrees = 3f;
         [SerializeField] private float _leanSmoothTime = 0.1f;
-        [SerializeField] private float _maxMouseLeanRollDegrees = 6f;
+        [SerializeField] private float _maxMouseLeanRollDegrees = 2f;
         [SerializeField] private float _maxMouseLeanPitchDegrees = 1f;
         [SerializeField] private float _mouseLeanTime = 0.2f;
-        [SerializeField] private float _verticalLeanMultiplier = 0.12f;
-        [SerializeField] private float _landingLeanMaxDegrees = 4f;
-        [SerializeField] private float _landingLeanVelocityScale = 0.12f;
-        [SerializeField] private float _landingLeanSmoothTime = 0.12f;
+        [SerializeField] private float _verticalLeanMultiplier = 0.7f;
+        [SerializeField] private float _landingLeanMaxDegrees = 10f;
+        [SerializeField] private float _landingLeanVelocityScale = 2f;
+        [SerializeField] private float _landingLeanSmoothTime = 0.2f;
         [SerializeField] private float _jumpLeanImpulseDegrees = 2f;
 
-        [Header("Audio")] 
+        [Header("Audio")][SerializeField] private AudioClip shootClip;
         [SerializeField] private AudioClip footstepsClip;
-        
+
         [Header("Recoil")]
         [SerializeField] private Vector3 _recoilPositionKickback = new Vector3(0f, 0f, -0.1f);
         [SerializeField] private Vector3 _recoilRotationKickback = new Vector3(-5f, 0f, 0f);
         [SerializeField] private float _recoilVerticalRotation = 3f;
+        [SerializeField] private float _recoilSnapTime = 0.05f;
         [SerializeField] private float _recoilReturnTime = 0.2f;
 
-        private AudioSource footstepsAudioSource;
         private AudioSource audioSource;
+        private AudioSource footstepsAudioSource;
         private float _yaw;
         private float _pitch;
         private PitchController _pitchController;
-        private CharacterController _characterController;
+        private Rigidbody _rigidbody;
         private GameObject _player;
         private float _currentLeanPitch;
         private float _currentLeanRoll;
@@ -114,6 +120,7 @@ namespace Player
         private float _bobTime;
         private bool _canShoot = true;
         private bool _isDead = false;
+        private bool _isGrounded = false;
 
         private bool _isJumpRequested;
         private bool _isCrouchRequested;
@@ -125,11 +132,16 @@ namespace Player
         private Action<SprintEvent> _onSprint;
         private Action<MoveEvent> _onMove;
         private Action<LookEvent> _onLook;
-        
+
         private Vector3 _recoilPositionOffset;
         private Vector3 _recoilRotationOffset;
         private Vector3 _recoilPositionVelocity;
         private Vector3 _recoilRotationVelocity;
+        private float _groundCheckRayDistance = 1.1f;
+        private CapsuleCollider _capsuleCollider;
+
+        [Header("Grounding")][SerializeField] private float _groundCheckExtraDistance = 0.05f;
+        [SerializeField] private float _groundCheckRadius = 0.25f;
 
         private void Awake()
         {
@@ -140,9 +152,17 @@ namespace Player
                 Debug.LogError("PitchController not found");
             }
 
-            if (!_player.TryGetComponentRecursive(out _characterController))
+            if (!_player.TryGetComponentRecursive(out _rigidbody))
             {
-                Debug.LogError("CharacterController not found");
+                Debug.LogError("Rigidbody not found");
+            }
+
+            if (_rigidbody != null)
+            {
+                _rigidbody.useGravity = false;
+                _rigidbody.freezeRotation = true;
+                _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+                _rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
             }
 
             audioSource = GetComponent<AudioSource>();
@@ -168,6 +188,12 @@ namespace Player
             _onMove = (e) => _moveInput = e.value;
             _onLook = (e) => _lookInput = e.value;
 
+            _player.TryGetComponentRecursive(out _capsuleCollider);
+            if (_capsuleCollider != null)
+            {
+                _groundCheckRayDistance = _capsuleCollider.bounds.extents.y + _groundCheckExtraDistance;
+            }
+
             EventBus<JumpEvent>.Subscribe(OnJump);
             EventBus<CrouchEvent>.Subscribe(_onCrouch);
             EventBus<SprintEvent>.Subscribe(_onSprint);
@@ -177,8 +203,7 @@ namespace Player
             EventBus<ShootOrangeEvent>.Subscribe(TryShootOrangePortal);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Death, OnPlayerDeath);
             EventBusVoid<PlayerEventsEnum>.Subscribe(PlayerEventsEnum.Respawn, OnPlayerRespawn);
-            EventBus<SetYawAndPitchEvent>.Subscribe(SetYawAndPitch);
-            
+
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
@@ -217,19 +242,25 @@ namespace Player
             if (_isDead) return;
 
             _isJumpRequested = e.value;
-            if (e.value && !_characterController.isGrounded)
+            if (e.value && !_isGrounded)
             {
                 if (_jumpBufferRoutine.IsRunning()) return;
 
                 _jumpBufferRoutine = Routine.Buffered(this, _bufferJumpTime,
-                    target => target._characterController.isGrounded, target => { target.PerformJump(); }).Run();
+                    target => target._isGrounded, target => { target.PerformJump(); }).Run();
             }
         }
 
         private void Update()
         {
+
+        }
+
+        private void FixedUpdate()
+        {
             if (_isDead) return;
             Look();
+            _isGrounded = IsGrounded();
             CalculateMovement();
             var frame = CalculateVerticalMovement();
             Move();
@@ -237,7 +268,19 @@ namespace Player
             ApplyLean();
             ApplyBob();
         }
-        
+
+        private bool IsGrounded()
+        {
+            if (_capsuleCollider != null)
+            {
+                var origin = _capsuleCollider.bounds.center;
+                var distance = _capsuleCollider.bounds.extents.y + _groundCheckExtraDistance;
+                return Physics.SphereCast(origin, _groundCheckRadius, Vector3.down, out _, distance, ~0, QueryTriggerInteraction.Ignore);
+            }
+
+            return Physics.Raycast(_player.transform.position, Vector3.down, _groundCheckRayDistance, ~0, QueryTriggerInteraction.Ignore);
+        }
+
         private void PerformJump()
         {
             _verticalVelocity = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
@@ -257,23 +300,13 @@ namespace Player
             _pitchController.SetPitch(_pitch, _invertPitch);
             _player.transform.rotation = Quaternion.Euler(0, _yaw, 0);
         }
-        
-        private void SetYawAndPitch(SetYawAndPitchEvent e)
-        {
-            _yaw = e.yaw;
-            _pitch = e.pitch;
-            _pitch = Mathf.Clamp(_pitch, -89f, 89f);
-
-            _pitchController.SetPitch(_pitch, _invertPitch);
-            _player.transform.rotation = Quaternion.Euler(0, _yaw, 0);
-        }
 
         private void CalculateMovement()
         {
             var localInput = new Vector3(_moveInput.x, 0, _moveInput.y);
             var tempVelocity = _player.transform.TransformDirection(localInput) * _speed;
             var isSprint = _isSprintRequested &&
-                           _characterController.velocity.magnitude >
+                           _rigidbody.linearVelocity.magnitude >
                            _sprintSpeedThresholdFactor * _speed * _runSpeedMultiplier;
             var targetWorldVelocity = tempVelocity * (isSprint ? _runSpeedMultiplier : 1f);
 
@@ -283,10 +316,10 @@ namespace Player
 
             var smoothTime = inputMagnitude switch
             {
-                > 0.01f when _characterController.isGrounded => _accelTime,
-                < 0.01f when _characterController.isGrounded => _decelTime,
-                > 0.01f when !_characterController.isGrounded => _accelTimeOnAir,
-                < 0.01f when !_characterController.isGrounded => _decelTimeOnAir,
+                > 0.01f when _isGrounded => _accelTime,
+                < 0.01f when _isGrounded => _decelTime,
+                > 0.01f when !_isGrounded => _accelTimeOnAir,
+                < 0.01f when !_isGrounded => _decelTimeOnAir,
                 _ => 0
             };
 
@@ -297,9 +330,9 @@ namespace Player
         private MovementFrameState CalculateVerticalMovement()
         {
             var jumpPressed = _isJumpRequested;
-            var groundedBeforeMove = _characterController.isGrounded;
+            var groundedBeforeMove = _isGrounded;
             var verticalVelocityBefore = _verticalVelocity;
-            if (_characterController.isGrounded)
+            if (_isGrounded)
             {
                 if (_verticalVelocity < 0f)
                 {
@@ -313,7 +346,7 @@ namespace Player
             }
             else
             {
-                _verticalVelocity += _gravity * Time.deltaTime;
+                _verticalVelocity += _gravity * Time.fixedDeltaTime;
             }
 
             _wasJumpPressed = jumpPressed;
@@ -323,12 +356,12 @@ namespace Player
         private void Move()
         {
             var total = _currentWorldVelocity + new Vector3(0f, _verticalVelocity, 0f);
-            _characterController.Move(total * Time.deltaTime);
+            _rigidbody.linearVelocity = total;
         }
 
         private void AfterMovement(MovementFrameState frame)
         {
-            var groundedAfterMove = _characterController.isGrounded;
+            var groundedAfterMove = _isGrounded;
             if (frame.GroundedBeforeMove && !groundedAfterMove && !_wasJumpPressed)
             {
                 if (!_coyoteTimeRoutine.IsRunning())
@@ -349,7 +382,7 @@ namespace Player
                 _landingLean = Mathf.Clamp(_landingLean + impulse, -_landingLeanMaxDegrees, _landingLeanMaxDegrees);
             }
 
-            if (_characterController.isGrounded && _verticalVelocity < 0f)
+            if (_isGrounded && _verticalVelocity < 0f)
             {
                 _verticalVelocity = _groundedGravity;
             }
@@ -382,7 +415,7 @@ namespace Player
             var pitchFromMouse = Mathf.Clamp(lookDeltaY * _mouseLeanTime, -_maxMouseLeanPitchDegrees,
                 _maxMouseLeanPitchDegrees);
 
-            var pitchFromVertical = _characterController.isGrounded
+            var pitchFromVertical = _isGrounded
                 ? 0f
                 : Mathf.Clamp(-_verticalVelocity * _verticalLeanMultiplier, -_maxLeanPitchDegrees,
                     _maxLeanPitchDegrees);
@@ -407,9 +440,9 @@ namespace Player
         private void ApplyBob()
         {
             var targetSpeed = _isSprintRequested ? _speed * _runSpeedMultiplier : _speed;
-            var isMoving = _characterController.velocity.magnitude > _movingSpeedThresholdFactor * targetSpeed;
+            var isMoving = _rigidbody.linearVelocity.magnitude > _movingSpeedThresholdFactor * targetSpeed;
 
-            if (!_characterController.isGrounded || !isMoving)
+            if (!_isGrounded || !isMoving)
             {
                 _bobTime = 0f;
             }
@@ -418,14 +451,14 @@ namespace Player
                 _bobTime += Time.deltaTime;
             }
 
-            _recoilPositionOffset = Vector3.SmoothDamp(_recoilPositionOffset, Vector3.zero, 
+            _recoilPositionOffset = Vector3.SmoothDamp(_recoilPositionOffset, Vector3.zero,
                 ref _recoilPositionVelocity, _recoilReturnTime);
-            _recoilRotationOffset = Vector3.SmoothDamp(_recoilRotationOffset, Vector3.zero, 
+            _recoilRotationOffset = Vector3.SmoothDamp(_recoilRotationOffset, Vector3.zero,
                 ref _recoilRotationVelocity, _recoilReturnTime);
 
-            var bob = _characterController.isGrounded ? 1f : 0f;
+            var bob = _isGrounded ? 1f : 0f;
             var bobSpeed = _isSprintRequested ? _sprintBobSpeedMultiplier : 1f;
-            var velocityMagnitudeNormalized = _characterController.velocity.magnitude / targetSpeed;
+            var velocityMagnitudeNormalized = _rigidbody.linearVelocity.magnitude / targetSpeed;
             bob *= velocityMagnitudeNormalized;
 
             var bobY = Mathf.Sin(_bobTime * _bobYFrequency * bobSpeed) * _bobYAmount * bob;
@@ -434,11 +467,11 @@ namespace Player
             var targetPosition = _handBaseLocalPosition + new Vector3(bobX, bobY, 0f) + _recoilPositionOffset;
             var smoothPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref _bobVelocity, _bobSmoothTime);
             _hand.transform.localPosition = smoothPosition;
-            
+
             _hand.transform.localRotation = Quaternion.Euler(_recoilRotationOffset);
-            
-            
-            if (_characterController.isGrounded && isMoving)
+
+
+            if (_isGrounded && isMoving)
             {
                 if (!footstepsAudioSource.isPlaying)
                 {
@@ -460,17 +493,19 @@ namespace Player
             {
                 if (_canShoot && !_isDead)
                 {
+                    EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Gun);
                     _shootRoutine = Routine.Create(Shoot(PortalColor.Blue)).Run();
                 }
             }
         }
-        
+
         private void TryShootOrangePortal(ShootOrangeEvent e)
         {
             if (e.value)
             {
                 if (_canShoot && !_isDead)
                 {
+                    EventBusVoid<PlayerEventsEnum>.Invoke(PlayerEventsEnum.Gun);
                     _shootRoutine = Routine.Create(Shoot(PortalColor.Orange)).Run();
                 }
             }
@@ -479,23 +514,23 @@ namespace Player
         private IEnumerator Shoot(PortalColor portalColor)
         {
             _canShoot = false;
-        
+
             yield return new WaitForSeconds(shotStartupTime);
-        
+
             // audioSource.PlayOneShot(shootClip);
-            
+
             // Apply recoil with vertical rotation
             _recoilPositionOffset = _recoilPositionKickback;
             _recoilRotationOffset = _recoilRotationKickback + new Vector3(_recoilVerticalRotation, 0f, 0f);
-        
+
             var target = _mainCamera.ScreenToWorldPoint(new Vector3(
                 _mainCamera.pixelWidth * (0.5f),
                 _mainCamera.pixelHeight * (0.5f),
                 .3f)) - _mainCamera.transform.position;
-        
+
             Physics.Raycast(_mainCamera.transform.position, target,
                 out var hit, 100f, portalAbleLayer);
-            
+
             if (hit.collider)
             {
                 var destPosition = hit.point + hit.normal * 0.01f;
@@ -519,9 +554,9 @@ namespace Player
                         break;
                 }
             }
-        
+
             yield return new WaitForSeconds(recoilTime);
-        
+
             _canShoot = true;
         }
 
@@ -533,13 +568,8 @@ namespace Player
             EventBus<MoveEvent>.Unsubscribe(_onMove);
             EventBus<LookEvent>.Unsubscribe(_onLook);
             EventBus<ShootBlueEvent>.Unsubscribe(TryShootBluePortal);
+            EventBus<ShootOrangeEvent>.Unsubscribe(TryShootOrangePortal);
             EventBusVoid<PlayerEventsEnum>.Unsubscribe(PlayerEventsEnum.Death, OnPlayerDeath);
         }
-    }
-    
-    public enum PortalColor
-    {
-        Blue,
-        Orange
     }
 }

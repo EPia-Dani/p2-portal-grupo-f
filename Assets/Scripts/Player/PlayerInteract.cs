@@ -6,6 +6,7 @@ namespace Player
     public class PlayerInteract : MonoBehaviour
     {
         private Camera playerCamera;
+        public float interactDistance = 10f;
         private void Start()
         {
             playerCamera = Camera.main;
@@ -19,7 +20,7 @@ namespace Player
         
         private void OnInteract()
         {
-            if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out var hit, 100f, ~0, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out var hit, interactDistance, ~0, QueryTriggerInteraction.Ignore))
             {
                 if (hit.collider.TryGetComponent<Interactable>(out var interactable))
                 {

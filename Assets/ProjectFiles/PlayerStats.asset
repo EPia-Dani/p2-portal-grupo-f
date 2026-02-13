@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc53cce1ddac42a4eaa21f9fa0aedf5e, type: 3}
+  m_Name: PlayerStats
+  m_EditorClassIdentifier: 
+  speed: 10
+  bufferJumpTime: 0.15
+  coyoteTime: 0.1
+  runSpeedMultiplier: 1.75
+  accelTime: 0.08
+  accelTimeOnAir: 0.3
+  decelTime: 0.08
+  decelTimeOnAir: 0.3
+  gravity: -35
+  jumpHeight: 2.5
+  groundedGravity: -2
+  shotStartupTime: 0.05
+  portalAbleLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  recoilTime: 0.2
+  bulletCount: 0
+  sensitivity: 0.167
+  invertPitch: 0
+  runFov: 70
+  smoothFovTime: 0.12
+  bobYAmount: 0.1
+  bobXAmount: 0.025
+  bobSmoothTime: 0.1
+  bobYFrequency: 12
+  bobXFrequency: 5
+  sprintSpeedThresholdFactor: 0.5
+  movingSpeedThresholdFactor: 0.5
+  sprintBobSpeedMultiplier: 1.25
+  maxLeanRollDegrees: 5
+  maxLeanPitchDegrees: 3
+  leanSmoothTime: 0.1
+  maxMouseLeanRollDegrees: 2
+  maxMouseLeanPitchDegrees: 1
+  mouseLeanTime: 0.2
+  verticalLeanMultiplier: 0.7
+  landingLeanMaxDegrees: 10
+  landingLeanVelocityScale: 2
+  landingLeanSmoothTime: 0.2
+  jumpLeanImpulseDegrees: 2
+  recoilPositionKickback: {x: 0, y: 0, z: -0.1}
+  recoilRotationKickback: {x: -5, y: 0, z: 0}
+  recoilVerticalRotation: 3
+  recoilSnapTime: 0.05
+  recoilReturnTime: 0.2
+  groundCheckExtraDistance: 0.05
+  groundCheckRadius: 0.25

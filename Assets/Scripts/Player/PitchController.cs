@@ -1,16 +1,16 @@
 using UnityEngine;
 namespace Player
 {
-    public class PitchController : MonoBehaviour
+    public class PitchController : MonoBehaviour, IModule
     {
+        private GameObject _hand;
+        private Quaternion _handBaseLocalRotation;
         private float _basePitch;
         private bool _isInvertPitch;
         private float _leanPitch;
         private float _leanRoll;
-        private GameObject _hand;
-        private Quaternion _handBaseLocalRotation;
 
-        private void Awake()
+        public void InitializeModule(PlayerService playerService)
         {
             _hand = gameObject.GetChildRecursive("Hand");
             _handBaseLocalRotation = _hand.transform.localRotation;
